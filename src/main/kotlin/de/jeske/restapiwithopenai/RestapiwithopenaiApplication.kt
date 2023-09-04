@@ -12,9 +12,3 @@ class RestapiwithopenaiApplication
 fun main(args: Array<String>) {
     runApplication<RestapiwithopenaiApplication>(*args)
 }
-
-@RestController
-class MessageController {
-    @GetMapping("/")
-    fun index(@RequestParam("name") name: String) = "Hello, $name!"
-}
