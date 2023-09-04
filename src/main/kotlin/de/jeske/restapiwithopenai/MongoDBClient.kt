@@ -7,8 +7,11 @@ import com.mongodb.ServerApi
 import com.mongodb.ServerApiVersion
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoClients
+import com.mongodb.client.model.Filters.eq
+import de.jeske.restapiwithopenai.entities.User
 import org.bson.BsonInt64
 import org.bson.Document
+import org.bson.types.ObjectId
 
 object MongoDBClient {
     fun init() : MongoClient? {
@@ -34,5 +37,19 @@ object MongoDBClient {
             System.err.println(e)
             null
         }
+    }
+
+    fun getTestUser() : User? {
+        val client = MongoDBClient.init() ?: return null
+        val database = client.getDatabase("TestData")
+        val collection = database.getCollection("users")
+        val result = collection.withDocumentClass<User>(User::class.java)
+            .find(eq("_id", ObjectId("64f5cb497b4d45c7c950c2e0")))
+
+        result.forEach { println(it) }
+
+        client.close()
+
+        return result.first()
     }
 }
