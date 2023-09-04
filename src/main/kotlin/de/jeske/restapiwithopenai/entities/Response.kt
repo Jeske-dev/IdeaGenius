@@ -1,5 +1,19 @@
 package de.jeske.restapiwithopenai.entities
 
+import org.bson.types.ObjectId
+import org.springframework.data.annotation.Id
+import org.springframework.data.mongodb.core.mapping.Document
 import java.util.Date
 
-data class Response(val _id: String, val processId: String, val requestId: String, val question: String, val answerChoices: List<String>, val date: Date)
+@Document("responses")
+data class Response(
+    @Id
+    val id: ObjectId = ObjectId(),
+    @Id
+    val processId: ObjectId,
+    @Id
+    val requestId: ObjectId,
+    val question: String,
+    val answerChoices: List<String> = emptyList(),
+    val date: Date
+)

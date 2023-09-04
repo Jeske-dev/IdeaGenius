@@ -1,5 +1,20 @@
 package de.jeske.restapiwithopenai.entities
 
+import org.bson.types.ObjectId
+import org.springframework.data.annotation.Id
+import org.springframework.data.mongodb.core.mapping.Document
 import java.util.Date
 
-data class Idea(val _id: String, val processId: String, val userId: String, val responseId: String, val title: String, val description: String, val date: Date)
+@Document("ideas")
+data class Idea(
+    @Id
+    val id: ObjectId = ObjectId(),
+    @Id
+    val processId: ObjectId,
+    @Id
+    val userId: ObjectId,
+    val responseId: String,
+    val title: String,
+    val description: String,
+    val date: Date
+)
