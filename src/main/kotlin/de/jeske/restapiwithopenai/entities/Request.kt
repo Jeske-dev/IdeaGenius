@@ -9,9 +9,7 @@ import java.util.Date
 data class Request(
     @Id
     val id: ObjectId = ObjectId(),
-    @Id
     val processId: ObjectId?,
-    @Id
     val responseId: ObjectId?,
     val choice: String?,
     val date: Date

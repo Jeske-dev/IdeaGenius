@@ -9,7 +9,6 @@ import java.util.Date
 data class Process(
     @Id
     val id: ObjectId = ObjectId(),
-    @Id
     val userId: ObjectId,
     val lang: String,
     val date: Date

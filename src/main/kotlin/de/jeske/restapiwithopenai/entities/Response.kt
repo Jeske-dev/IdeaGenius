@@ -9,9 +9,7 @@ import java.util.Date
 data class Response(
     @Id
     val id: ObjectId = ObjectId(),
-    @Id
     val processId: ObjectId,
-    @Id
     val requestId: ObjectId,
     val question: String,
     val answerChoices: List<String> = emptyList(),

@@ -9,9 +9,7 @@ import java.util.Date
 data class Idea(
     @Id
     val id: ObjectId = ObjectId(),
-    @Id
     val processId: ObjectId,
-    @Id
     val userId: ObjectId,
     val responseId: String,
     val title: String,
