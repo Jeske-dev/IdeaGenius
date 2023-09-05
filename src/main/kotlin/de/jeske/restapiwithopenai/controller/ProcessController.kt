@@ -22,7 +22,7 @@ class ProcessController {
 
         // TODO: get process from database
 
-        return Process(ObjectId(id), ObjectId(), "de", Date.from(Instant.now()))
+        return Process(ObjectId(), ObjectId(), "de", Date.from(Instant.now()))
 
     }
 
@@ -32,7 +32,7 @@ class ProcessController {
         @RequestParam lang: String
     ) : Question? {
 
-        val newProcess = Process(ObjectId(), ObjectId(id), lang, Date.from(Instant.now()))
+        val newProcess = Process(ObjectId(), ObjectId(), lang, Date.from(Instant.now()))
 
         val currentRequest = Request(
             id = ObjectId(),

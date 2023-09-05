@@ -7,7 +7,6 @@ import java.util.Date
 
 @Document("ideas")
 data class Idea(
-    @Id
     val id: ObjectId = ObjectId(),
     val processId: ObjectId,
     val requestId: ObjectId,
@@ -15,9 +14,4 @@ data class Idea(
     val userId: ObjectId,
     val title: String,
     val description: String,
-) : Response (
-    _id = id,
-    _processId = processId,
-    _requestId = requestId,
-    _date = date
-)
+) : Response("idea")
