@@ -12,6 +12,7 @@ import de.jeske.restapiwithopenai.entities.User
 import org.bson.BsonInt64
 import org.bson.Document
 import org.bson.types.ObjectId
+import java.lang.Exception
 
 object MongoDBClient {
     fun init() : MongoClient? {
@@ -42,14 +43,28 @@ object MongoDBClient {
     fun getTestUser() : User? {
         val client = MongoDBClient.init() ?: return null
         val database = client.getDatabase("TestData")
-        val collection = database.getCollection("users")
-        val result = collection.withDocumentClass<User>(User::class.java)
-            .find(eq("_id", ObjectId("64f5cb497b4d45c7c950c2e0")))
-
-        result.forEach { println(it) }
+        val collection = database.getCollection("users", User::class.java)
+        val result = collection.find(eq("_id", ObjectId("64f5cb497b4d45c7c950c2e0")))
 
         client.close()
 
         return result.first()
     }
+
+    fun insertTestUser() : Boolean {
+        try {
+            val client = MongoDBClient.init() ?: return false
+            val database = client.getDatabase("TestData")
+            val collection = database.getCollection("users", User::class.java)
+
+            val testUser = User(id = ObjectId(), email =  "testmail@mail.de", surname = "Zufall", firstname = "Rheier")
+
+            return collection.insertOne(testUser).wasAcknowledged()
+        } catch (e: Exception) {
+            return false
+        }
+    }
 }
+
+//collection.find(Document("_id", "64f5cb497b4d45c7c950c2e0"))
+//collection.aggregate(listOf())

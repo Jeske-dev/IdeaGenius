@@ -16,4 +16,10 @@ class MongoDBClientTest {
         assertEquals(expected, MongoDBClient.getTestUser()?.firstname)
     }
 
+    @Test
+    fun `should return true if object could be added`() {
+        val expected = true
+        assertEquals(expected, MongoDBClient.insertTestUser())
+    }
+
 }
