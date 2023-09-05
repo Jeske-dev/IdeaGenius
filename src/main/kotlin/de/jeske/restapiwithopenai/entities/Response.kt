@@ -6,12 +6,10 @@ import org.springframework.data.mongodb.core.mapping.Document
 import java.util.Date
 
 @Document("responses")
-data class Response(
+open class Response(
     @Id
-    val id: ObjectId = ObjectId(),
-    val processId: ObjectId,
-    val requestId: ObjectId,
-    val question: String,
-    val answerChoices: List<String> = emptyList(),
-    val date: Date
+    val _id: ObjectId = ObjectId(),
+    val _processId: ObjectId,
+    val _requestId: ObjectId,
+    val _date: Date
 )
