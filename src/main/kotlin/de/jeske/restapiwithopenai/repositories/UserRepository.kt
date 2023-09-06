@@ -2,10 +2,8 @@ package de.jeske.restapiwithopenai.repositories
 
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
-import de.jeske.restapiwithopenai.MongoDBClient
 import de.jeske.restapiwithopenai.entities.UserEntity
 import de.jeske.restapiwithopenai.modells.User
-import org.bson.Document
 import org.bson.types.ObjectId
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
@@ -20,12 +18,13 @@ class UserRepository {
         val client = mongoDBClient.getClient()?:return null
         val db = client.getDatabase("development")
         val collection = db.getCollection("users", UserEntity::class.java)
-
         val byId = Filters.eq(UserEntity::id.name, id)
 
         val result = collection.find(byId)
+        val user = result.first()?.toUser()
 
-        return result.first()?.toUser()
+        client.close()
+        return user
     }
     // getUsers
 
@@ -35,8 +34,10 @@ class UserRepository {
         val collection = db.getCollection("users", UserEntity::class.java)
 
         val result = collection.find()
+        val users = result.toList().map { it.toUser() }
 
-        return result.toList().map { it.toUser() }
+        client.close()
+        return users
     }
 
     // createUser
@@ -47,8 +48,10 @@ class UserRepository {
         val collection = db.getCollection("users", UserEntity::class.java)
 
         val result = collection.insertOne(UserEntity(user))
+        val wasAcknowledged = result.wasAcknowledged()
 
-        return result.wasAcknowledged()
+        client.close()
+        return wasAcknowledged
     }
 
     // updateUser
@@ -68,8 +71,10 @@ class UserRepository {
         )
 
         val result = collection.updateOne(byId, updates)
+        val wasAcknowledged = result.wasAcknowledged()
 
-        return result.wasAcknowledged()
+        client.close()
+        return wasAcknowledged
     }
 
     // deleteUser
@@ -82,8 +87,10 @@ class UserRepository {
         val byId = Filters.eq(UserEntity::id.name, id)
 
         val result = collection.deleteOne(byId)
+        val wasAcknowledged = result.wasAcknowledged()
 
-        return result.wasAcknowledged()
+        client.close()
+        return wasAcknowledged
     }
 
 }
