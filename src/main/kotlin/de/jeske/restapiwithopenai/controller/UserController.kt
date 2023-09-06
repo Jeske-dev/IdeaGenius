@@ -3,6 +3,7 @@ package de.jeske.restapiwithopenai.controller
 import de.jeske.restapiwithopenai.dtos.UserDTO
 import de.jeske.restapiwithopenai.dtos.UserIdDTO
 import de.jeske.restapiwithopenai.entities.UserEntity
+import de.jeske.restapiwithopenai.modells.User
 import org.bson.types.ObjectId
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -23,7 +24,7 @@ class UserController {
 
         // TODO: ... get User from database ...
 
-        val user = UserEntity(ObjectId(), "Pasti", "Andi", "andipasti@tester.lol")
+        val user = User(ObjectId(), "Pasti", "Andi", "andipasti@tester.lol")
 
         return UserDTO(user)
     }
@@ -35,7 +36,7 @@ class UserController {
         @RequestParam firstname: String
     ): UserIdDTO? {
 
-        val user = UserEntity(
+        val user = User(
             email = email,
             surname = surname,
             firstname = firstname
@@ -60,7 +61,7 @@ class UserController {
         // all of this should be done in a service
         // TODO: ... get User by Id from database
 
-        val oldUser = UserEntity(
+        val oldUser = User(
             surname = "Milli",
             firstname = "Liter",
             email = "milliliter@tester.lol"

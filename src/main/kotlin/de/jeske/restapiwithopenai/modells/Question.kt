@@ -1,11 +1,8 @@
-package de.jeske.restapiwithopenai.entities
+package de.jeske.restapiwithopenai.modells
 
 import org.bson.types.ObjectId
-import org.springframework.data.annotation.Id
-import org.springframework.data.mongodb.core.mapping.Document
 import java.util.*
 
-@Document("questions")
 data class Question (
     val id: ObjectId = ObjectId(),
     val processId: ObjectId,
@@ -13,4 +10,4 @@ data class Question (
     val date: Date,
     val question: String,
     val answerChoices: List<String> = emptyList(),
-) : Response ("question")
+)

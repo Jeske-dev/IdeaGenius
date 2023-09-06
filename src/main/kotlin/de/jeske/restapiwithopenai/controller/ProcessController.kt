@@ -1,6 +1,14 @@
 package de.jeske.restapiwithopenai.controller
 
+import de.jeske.restapiwithopenai.dtos.IdeaDTO
+import de.jeske.restapiwithopenai.dtos.ProcessDTO
+import de.jeske.restapiwithopenai.dtos.QuestionDTO
+import de.jeske.restapiwithopenai.dtos.Response
 import de.jeske.restapiwithopenai.entities.*
+import de.jeske.restapiwithopenai.modells.Idea
+import de.jeske.restapiwithopenai.modells.Process
+import de.jeske.restapiwithopenai.modells.Question
+import de.jeske.restapiwithopenai.modells.Request
 import org.bson.types.ObjectId
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -18,11 +26,13 @@ class ProcessController {
     @GetMapping
     fun getProcess(
         @RequestParam id: String
-    ) : Process? {
+    ) : ProcessDTO? {
 
         // TODO: get process from database
 
-        return Process(ObjectId(), ObjectId(), "de", Date.from(Instant.now()))
+        val process = Process(ObjectId(), ObjectId(), "de", Date.from(Instant.now()))
+
+        return ProcessDTO(process)
 
     }
 
@@ -30,7 +40,7 @@ class ProcessController {
     fun startProcess(
         @RequestParam id: String,
         @RequestParam lang: String
-    ) : Question? {
+    ) : QuestionDTO? {
 
         val newProcess = Process(ObjectId(), ObjectId(), lang, Date.from(Instant.now()))
 
@@ -44,7 +54,7 @@ class ProcessController {
 
         // TODO: save new process and request
 
-        return Question(
+        val question = Question(
             id = ObjectId(),
             processId = newProcess.id,
             requestId = currentRequest.id,
@@ -52,6 +62,8 @@ class ProcessController {
             question = "Do you thing this is an error?",
             answerChoices = listOf("Yes", "Maybe, nobody knows...", "100% No"),
         )
+
+        return QuestionDTO(question)
 
     }
 
@@ -83,7 +95,7 @@ class ProcessController {
         // TODO: save new process and request
 
         return if (Random().nextInt(2) == 1) {
-            Idea(
+            val idea = Idea(
                 id = ObjectId(),
                 processId = currentProcess.id,
                 requestId = currentRequest.id,
@@ -92,14 +104,18 @@ class ProcessController {
                 title = "REST API in Kotlin with MongoDB and OpenAI",
                 description = "Develop a RESTful API with Spring Boot in Kotlin. Data should be stored in a MongoDB Database. TIPP: Use MongoDB ATlas, a cloud-based database. Process data with ChatGPT. There is a free API. The topic is left to you!",
             )
-        } else Question(
-            id = ObjectId(),
-            processId = currentProcess.id,
-            requestId = currentRequest.id,
-            date = Date.from(Instant.now()),
-            question = "Ok, and do you think I can do mistakes?",
-            answerChoices = listOf("No, because you are a computer", "NOOOOOOOO!", "I dont know"),
-        )
+            IdeaDTO(idea)
+        } else {
+            val question = Question(
+                id = ObjectId(),
+                processId = currentProcess.id,
+                requestId = currentRequest.id,
+                date = Date.from(Instant.now()),
+                question = "Ok, and do you think I can do mistakes?",
+                answerChoices = listOf("No, because you are a computer", "NOOOOOOOO!", "I dont know"),
+            )
+            QuestionDTO(question)
+        }
 
     }
 

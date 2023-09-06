@@ -5,5 +5,12 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import java.util.Date
 
-// It's just an empty Shell for Question.kt and Idea.kt
-open class Response (val type: String)
+@Document("requests")
+data class RequestEntity(
+    @Id
+    val id: ObjectId = ObjectId(),
+    val processId: ObjectId,
+    val responseId: ObjectId?,
+    val choice: String?,
+    val date: Date
+)

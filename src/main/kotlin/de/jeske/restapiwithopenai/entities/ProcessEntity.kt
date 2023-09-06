@@ -5,13 +5,11 @@ import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
 import java.util.Date
 
-@Document("ideas")
-data class Idea(
+@Document("processes")
+data class ProcessEntity(
+    @Id
     val id: ObjectId = ObjectId(),
-    val processId: ObjectId,
-    val requestId: ObjectId,
-    val date: Date,
     val userId: ObjectId,
-    val title: String,
-    val description: String,
-) : Response("idea")
+    val lang: String,
+    val date: Date
+)
