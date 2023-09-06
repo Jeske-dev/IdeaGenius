@@ -1,4 +1,4 @@
-package de.jeske.restapiwithopenai
+package de.jeske.restapiwithopenai.repositories
 
 import com.mongodb.ConnectionString
 import com.mongodb.MongoClientSettings
@@ -7,7 +7,6 @@ import com.mongodb.ServerApi
 import com.mongodb.ServerApiVersion
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoClients
-import com.mongodb.client.MongoDatabase
 import de.jeske.restapiwithopenai.codecs.UserEntityCodec
 import de.jeske.restapiwithopenai.entities.UserEntity
 import de.jeske.restapiwithopenai.modells.User
@@ -15,6 +14,8 @@ import org.bson.BsonInt64
 import org.bson.Document
 import org.bson.codecs.configuration.CodecRegistries
 import org.bson.types.ObjectId
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.ApplicationArguments
 import org.springframework.stereotype.Component
 import java.lang.Exception
 
@@ -24,23 +25,29 @@ object MongoDBClient {
     // Current Issue:
     // MongoClient is never closed, but it should be
 
-    private var uri = "mongodb+srv://dev:082m5Zip4JWiVV4U@cluster0.3hlx91e.mongodb.net/?retryWrites=true&w=majority"
-
-    private val codecRegistry = CodecRegistries.fromRegistries(
-        MongoClientSettings.getDefaultCodecRegistry(),
-        CodecRegistries.fromCodecs(UserEntityCodec())
-    )
-    private val serverApi = ServerApi.builder()
-        .version(ServerApiVersion.V1)
-        .build()
-
-    private val settings = MongoClientSettings.builder()
-        .codecRegistry(codecRegistry)
-        .applyConnectionString(ConnectionString(uri))
-        .serverApi(serverApi)
-        .build()
+    @Autowired
+    private lateinit var args : ApplicationArguments
 
     fun getClient() : MongoClient? {
+
+        val uri = args.getOptionValues("uri").first() as String
+        // IMPORTANT: Add uri to application arguments
+        // Or use this code instead
+        // private var uri = "mongodb+srv://dev:082m5Zip4JWiVV4U@cluster0.3hlx91e.mongodb.net/?retryWrites=true&w=majority"
+
+        val codecRegistry = CodecRegistries.fromRegistries(
+            MongoClientSettings.getDefaultCodecRegistry(),
+            CodecRegistries.fromCodecs(UserEntityCodec())
+        )
+        val serverApi = ServerApi.builder()
+            .version(ServerApiVersion.V1)
+            .build()
+
+        val settings = MongoClientSettings.builder()
+            .codecRegistry(codecRegistry)
+            .applyConnectionString(ConnectionString(uri))
+            .serverApi(serverApi)
+            .build()
 
         val mongoClient = MongoClients.create(settings)
         val database = mongoClient.getDatabase("admin")
