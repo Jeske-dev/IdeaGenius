@@ -1,5 +1,6 @@
 package de.jeske.restapiwithopenai.entities
 
+import de.jeske.restapiwithopenai.modells.User
 import org.bson.types.ObjectId
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.mapping.Document
@@ -12,4 +13,8 @@ data class UserEntity(
     val surname: String,
     val firstname:String,
     val processIds: List<String> = emptyList()
-)
+) {
+    constructor(user: User): this(user.id, user.email, user.surname, user.firstname, user.processIds)
+
+    fun toUser(): User = User(id, email, surname, firstname, processIds)
+}
