@@ -1,7 +1,9 @@
 package de.jeske.restapiwithopenai.controller
 
-import de.jeske.restapiwithopenai.dtos.UserId
-import de.jeske.restapiwithopenai.entities.User
+import de.jeske.restapiwithopenai.dtos.UserDTO
+import de.jeske.restapiwithopenai.dtos.UserIdDTO
+import de.jeske.restapiwithopenai.entities.UserEntity
+import org.bson.types.ObjectId
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -15,17 +17,15 @@ import org.springframework.web.bind.annotation.RestController
 class UserController {
 
     @GetMapping
-    fun getUser(@RequestParam id: String) : User? {
+    fun getUser(@RequestParam id: String) : UserDTO {
 
         // all of this should be done in a service
 
         // TODO: ... get User from database ...
 
-        return User(
-            surname = "Pasti",
-            firstname = "Andi",
-            email = "andipasti@tester.lol"
-        )
+        val user = UserEntity(ObjectId(), "Pasti", "Andi", "andipasti@tester.lol")
+
+        return UserDTO(user)
     }
 
     @PostMapping
@@ -33,9 +33,9 @@ class UserController {
         @RequestParam email: String,
         @RequestParam surname: String,
         @RequestParam firstname: String
-    ): UserId? {
+    ): UserIdDTO? {
 
-        val user = User(
+        val user = UserEntity(
             email = email,
             surname = surname,
             firstname = firstname
@@ -45,7 +45,7 @@ class UserController {
 
         // TODO: ... add User to database
 
-        return UserId(user.id)
+        return UserIdDTO(user)
 
     }
 
@@ -55,12 +55,12 @@ class UserController {
         @RequestParam email: String?,
         @RequestParam surname: String?,
         @RequestParam firstname: String?,
-    ) : User? {
+    ) : UserDTO? {
 
         // all of this should be done in a service
         // TODO: ... get User by Id from database
 
-        val oldUser = User(
+        val oldUser = UserEntity(
             surname = "Milli",
             firstname = "Liter",
             email = "milliliter@tester.lol"
@@ -72,7 +72,7 @@ class UserController {
             firstname = firstname ?: oldUser.firstname
         )
 
-        return newUser
+        return UserDTO(newUser)
 
     }
 
