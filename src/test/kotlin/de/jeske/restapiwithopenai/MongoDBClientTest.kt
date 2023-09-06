@@ -7,7 +7,7 @@ class MongoDBClientTest {
 
     @Test
     fun `should return not null if a connection to mongoClient could be established`() {
-        assertNotNull(MongoDBClient.init())
+        assertNotNull(MongoDBClient.getClient())
     }
 
     @Test

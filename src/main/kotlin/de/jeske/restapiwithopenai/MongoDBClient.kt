@@ -7,6 +7,7 @@ import com.mongodb.ServerApi
 import com.mongodb.ServerApiVersion
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoClients
+import com.mongodb.client.MongoDatabase
 import de.jeske.restapiwithopenai.codecs.UserEntityCodec
 import de.jeske.restapiwithopenai.entities.UserEntity
 import de.jeske.restapiwithopenai.modells.User
@@ -14,25 +15,32 @@ import org.bson.BsonInt64
 import org.bson.Document
 import org.bson.codecs.configuration.CodecRegistries
 import org.bson.types.ObjectId
+import org.springframework.stereotype.Component
 import java.lang.Exception
 
+@Component
 object MongoDBClient {
-    fun init() : MongoClient? {
 
-        val uri = "mongodb+srv://dev:082m5Zip4JWiVV4U@cluster0.3hlx91e.mongodb.net/?retryWrites=true&w=majority"
-        val codecRegistry = CodecRegistries.fromRegistries(
-            MongoClientSettings.getDefaultCodecRegistry(),
-            CodecRegistries.fromCodecs(UserEntityCodec())
-        )
-        val serverApi = ServerApi.builder()
-            .version(ServerApiVersion.V1)
-            .build()
+    // Current Issue:
+    // MongoClient is never closed, but it should be
 
-        val settings = MongoClientSettings.builder()
-            .codecRegistry(codecRegistry)
-            .applyConnectionString(ConnectionString(uri))
-            .serverApi(serverApi)
-            .build()
+    private var uri = "mongodb+srv://dev:082m5Zip4JWiVV4U@cluster0.3hlx91e.mongodb.net/?retryWrites=true&w=majority"
+
+    private val codecRegistry = CodecRegistries.fromRegistries(
+        MongoClientSettings.getDefaultCodecRegistry(),
+        CodecRegistries.fromCodecs(UserEntityCodec())
+    )
+    private val serverApi = ServerApi.builder()
+        .version(ServerApiVersion.V1)
+        .build()
+
+    private val settings = MongoClientSettings.builder()
+        .codecRegistry(codecRegistry)
+        .applyConnectionString(ConnectionString(uri))
+        .serverApi(serverApi)
+        .build()
+
+    fun getClient() : MongoClient? {
 
         val mongoClient = MongoClients.create(settings)
         val database = mongoClient.getDatabase("admin")
@@ -49,21 +57,19 @@ object MongoDBClient {
     }
 
     fun getRandomTestUser() : User? {
-        val client = MongoDBClient.init() ?: return null
+        val client = getClient() ?: return null
         val database = client.getDatabase("TestData")
         val collection = database.getCollection("users", UserEntity::class.java)
         val result = collection.find()
 
         val user = result.first()?.toUser()
 
-        client.close()
-
         return user
     }
 
     fun insertTestUser() : Boolean {
         try {
-            val client = MongoDBClient.init() ?: return false
+            val client = getClient() ?: return false
             val database = client.getDatabase("TestData")
             val collection = database.getCollection("users", UserEntity::class.java)
 
@@ -75,6 +81,3 @@ object MongoDBClient {
         }
     }
 }
-
-//collection.find(Document("_id", "64f5cb497b4d45c7c950c2e0"))
-//collection.aggregate(listOf())
