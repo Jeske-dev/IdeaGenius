@@ -12,8 +12,7 @@ class MongoDBClientTest {
 
     @Test
     fun `should return the name Hannes of a test user`() {
-        val expected = "Hannes"
-        assertEquals(expected, MongoDBClient.getTestUser()?.firstname)
+        assertNotNull(MongoDBClient.getRandomTestUser())
     }
 
     @Test

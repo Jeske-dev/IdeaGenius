@@ -8,9 +8,11 @@ import com.mongodb.ServerApiVersion
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoClients
 import com.mongodb.client.model.Filters.eq
+import de.jeske.restapiwithopenai.codecs.UserEntityCodec
 import de.jeske.restapiwithopenai.entities.User
 import org.bson.BsonInt64
 import org.bson.Document
+import org.bson.codecs.configuration.CodecRegistries
 import org.bson.types.ObjectId
 import java.lang.Exception
 
@@ -18,10 +20,16 @@ object MongoDBClient {
     fun init() : MongoClient? {
 
         val uri = "mongodb+srv://dev:082m5Zip4JWiVV4U@cluster0.3hlx91e.mongodb.net/?retryWrites=true&w=majority"
+        val codecRegistry = CodecRegistries.fromRegistries(
+            MongoClientSettings.getDefaultCodecRegistry(),
+            CodecRegistries.fromCodecs(UserEntityCodec())
+        )
         val serverApi = ServerApi.builder()
             .version(ServerApiVersion.V1)
             .build()
+
         val settings = MongoClientSettings.builder()
+            .codecRegistry(codecRegistry)
             .applyConnectionString(ConnectionString(uri))
             .serverApi(serverApi)
             .build()
@@ -40,15 +48,17 @@ object MongoDBClient {
         }
     }
 
-    fun getTestUser() : User? {
+    fun getRandomTestUser() : User? {
         val client = MongoDBClient.init() ?: return null
         val database = client.getDatabase("TestData")
         val collection = database.getCollection("users", User::class.java)
-        val result = collection.find(eq("_id", ObjectId("64f5cb497b4d45c7c950c2e0")))
+        val result = collection.find()
+
+        val user = result.first()
 
         client.close()
 
-        return result.first()
+        return user
     }
 
     fun insertTestUser() : Boolean {
@@ -57,7 +67,7 @@ object MongoDBClient {
             val database = client.getDatabase("TestData")
             val collection = database.getCollection("users", User::class.java)
 
-            val testUser = User(id = ObjectId(), email =  "testmail@mail.de", surname = "Zufall", firstname = "Rheier")
+            val testUser = User(id = ObjectId(), email =  "testmail@mail.de", surname = "Zufall", firstname = "Rheiner")
 
             return collection.insertOne(testUser).wasAcknowledged()
         } catch (e: Exception) {
