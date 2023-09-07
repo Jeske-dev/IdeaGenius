@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document
 @Document("users")
 data class UserEntity(
     @Id
-    val id: ObjectId,
+    val _id: ObjectId,
     val email: String,
     val surname: String,
     val firstname:String,
@@ -16,5 +16,5 @@ data class UserEntity(
 ) {
     constructor(user: User): this(user.id, user.email, user.surname, user.firstname, user.processIds)
 
-    fun toUser(): User = User(id, email, surname, firstname, processIds)
+    fun toUser(): User = User(_id, email, surname, firstname, processIds)
 }

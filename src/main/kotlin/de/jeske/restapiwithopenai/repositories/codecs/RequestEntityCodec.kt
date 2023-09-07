@@ -1,4 +1,4 @@
-package de.jeske.restapiwithopenai.codecs
+package de.jeske.restapiwithopenai.repositories.codecs
 
 import de.jeske.restapiwithopenai.entities.RequestEntity
 import org.bson.BsonReader
@@ -13,7 +13,7 @@ import java.util.Date
 class RequestEntityCodec : Codec<RequestEntity> {
     override fun encode(writer: BsonWriter, value: RequestEntity, encoderContext: EncoderContext) {
         writer.writeStartDocument()
-        writer.writeObjectId("_id", value.id)
+        writer.writeObjectId("_id", value._id)
         writer.writeObjectId("processId", value.processId)
         if (value.responseId != null) {
             writer.writeObjectId("responseId", value.responseId)

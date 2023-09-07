@@ -1,4 +1,4 @@
-package de.jeske.restapiwithopenai.codecs
+package de.jeske.restapiwithopenai.repositories.codecs
 
 import de.jeske.restapiwithopenai.entities.UserEntity
 import org.bson.BsonReader
@@ -11,7 +11,7 @@ import org.bson.codecs.EncoderContext
 class UserEntityCodec : Codec<UserEntity> {
     override fun encode(writer: BsonWriter, value: UserEntity, encoderContext: EncoderContext) {
         writer.writeStartDocument()
-        writer.writeObjectId("_id", value.id)
+        writer.writeObjectId("_id", value._id)
         writer.writeString("email", value.email)
         writer.writeString("surname", value.surname)
         writer.writeString("firstname", value.firstname)

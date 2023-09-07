@@ -1,5 +1,6 @@
 package de.jeske.restapiwithopenai.repositories
 
+import GenericCodec
 import com.mongodb.ConnectionString
 import com.mongodb.MongoClientSettings
 import com.mongodb.MongoException
@@ -7,17 +8,12 @@ import com.mongodb.ServerApi
 import com.mongodb.ServerApiVersion
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoClients
-import de.jeske.restapiwithopenai.codecs.*
-import de.jeske.restapiwithopenai.entities.UserEntity
-import de.jeske.restapiwithopenai.modells.User
+import de.jeske.restapiwithopenai.entities.*
+import de.jeske.restapiwithopenai.repositories.codecs.*
 import org.bson.BsonInt64
 import org.bson.Document
 import org.bson.codecs.configuration.CodecRegistries
-import org.bson.types.ObjectId
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.ApplicationArguments
 import org.springframework.stereotype.Component
-import java.lang.Exception
 
 @Component
 object MongoDBClient {
@@ -28,27 +24,35 @@ object MongoDBClient {
     // just for test
     private const val _uri = "mongodb+srv://dev:082m5Zip4JWiVV4U@cluster0.3hlx91e.mongodb.net/?retryWrites=true&w=majority"
 
+    private val codecRegistry = CodecRegistries.fromRegistries(
+        MongoClientSettings.getDefaultCodecRegistry(),
+        CodecRegistries.fromCodecs(
+
+            GenericCodec(UserEntity::class.java, listOf("_id", "email", "surname", "firstname")),
+            GenericCodec(ProcessEntity::class.java, listOf("_id", "userId", "lang", "date")),
+            GenericCodec(RequestEntity::class.java, listOf("_id", "processId", "responseId", "choice", "date")),
+            GenericCodec(QuestionEntity::class.java, listOf("_id", "processId", "requestId", "date", "question", "answerChoices")),
+            GenericCodec(IdeaEntity::class.java, listOf("_id", "processId", "requestId", "date", "userId", "title", "description"))
+
+            /*
+            UserEntityCodec(),
+            ProcessEntityCodec(),
+            RequestEntityCodec(),
+            QuestionEntityCodec(),
+            IdeaEntityCodec()
+
+             */
+        )
+    )
+    private val serverApi = ServerApi.builder()
+        .version(ServerApiVersion.V1)
+        .build()
 
     fun getClient() : MongoClient? {
-
 
         // for testing
         val uri = _uri
         //val uri = args.getOptionValues("uri").first() as String
-
-        val codecRegistry = CodecRegistries.fromRegistries(
-            MongoClientSettings.getDefaultCodecRegistry(),
-            CodecRegistries.fromCodecs(
-                UserEntityCodec(),
-                ProcessEntityCodec(),
-                RequestEntityCodec(),
-                QuestionEntityCodec(),
-                IdeaEntityCodec()
-            )
-        )
-        val serverApi = ServerApi.builder()
-            .version(ServerApiVersion.V1)
-            .build()
 
         val settings = MongoClientSettings.builder()
             .codecRegistry(codecRegistry)

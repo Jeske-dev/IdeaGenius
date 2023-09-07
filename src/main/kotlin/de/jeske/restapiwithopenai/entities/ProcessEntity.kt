@@ -9,11 +9,11 @@ import java.util.Date
 @Document("processes")
 data class ProcessEntity(
     @Id
-    val id: ObjectId = ObjectId(),
+    val _id: ObjectId = ObjectId(),
     val userId: ObjectId,
     val lang: String,
     val date: Date
 ) {
     constructor(process: Process) : this(process.id, process.userId, process.lang, process.date)
-    fun toProcess() : Process = Process(id, userId, lang, date)
+    fun toProcess() : Process = Process(_id, userId, lang, date)
 }
