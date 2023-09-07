@@ -8,7 +8,6 @@ import org.bson.codecs.Codec
 import org.bson.codecs.DecoderContext
 import org.bson.codecs.EncoderContext
 
-// TODO: change User to UserEntity
 class UserEntityCodec : Codec<UserEntity> {
     override fun encode(writer: BsonWriter, value: UserEntity, encoderContext: EncoderContext) {
         writer.writeStartDocument()

@@ -7,7 +7,7 @@ import com.mongodb.ServerApi
 import com.mongodb.ServerApiVersion
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoClients
-import de.jeske.restapiwithopenai.codecs.UserEntityCodec
+import de.jeske.restapiwithopenai.codecs.*
 import de.jeske.restapiwithopenai.entities.UserEntity
 import de.jeske.restapiwithopenai.modells.User
 import org.bson.BsonInt64
@@ -38,7 +38,13 @@ object MongoDBClient {
 
         val codecRegistry = CodecRegistries.fromRegistries(
             MongoClientSettings.getDefaultCodecRegistry(),
-            CodecRegistries.fromCodecs(UserEntityCodec())
+            CodecRegistries.fromCodecs(
+                UserEntityCodec(),
+                ProcessEntityCodec(),
+                RequestEntityCodec(),
+                QuestionEntityCodec(),
+                IdeaEntityCodec()
+            )
         )
         val serverApi = ServerApi.builder()
             .version(ServerApiVersion.V1)
@@ -61,31 +67,6 @@ object MongoDBClient {
         } catch (e: MongoException) {
             System.err.println(e)
             null
-        }
-    }
-
-    fun getRandomTestUser() : User? {
-        val client = getClient() ?: return null
-        val database = client.getDatabase("TestData")
-        val collection = database.getCollection("users", UserEntity::class.java)
-        val result = collection.find()
-
-        val user = result.first()?.toUser()
-
-        return user
-    }
-
-    fun insertTestUser() : Boolean {
-        try {
-            val client = getClient() ?: return false
-            val database = client.getDatabase("TestData")
-            val collection = database.getCollection("users", UserEntity::class.java)
-
-            val testUser = User(id = ObjectId(), email =  "testmail@mail.de", surname = "Zufall", firstname = "Rheiner")
-
-            return collection.insertOne(UserEntity(testUser)).wasAcknowledged()
-        } catch (e: Exception) {
-            return false
         }
     }
 }
