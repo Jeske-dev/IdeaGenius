@@ -10,7 +10,6 @@ import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 
-@ExtendWith(MockitoExtension::class)
 class UserRepositoryTest {
 
     private val userRepository = UserRepository(MongoDBClient)
