@@ -4,21 +4,21 @@ import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
 import de.jeske.restapiwithopenai.entities.UserEntity
 import de.jeske.restapiwithopenai.modells.User
+import org.bson.Document
 import org.bson.types.ObjectId
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
 
 @Repository
-class UserRepository {
+class UserRepository @Autowired constructor(private val mongoDBClient: MongoDBClient) {
 
-    @Autowired
-    private lateinit var mongoDBClient: MongoDBClient
+    private val databaseName = "TestData"
 
     fun getUserById(id: ObjectId) : User? {
         val client = mongoDBClient.getClient()?:return null
-        val db = client.getDatabase("development")
+        val db = client.getDatabase(databaseName)
         val collection = db.getCollection("users", UserEntity::class.java)
-        val byId = Filters.eq(UserEntity::id.name, id)
+        val byId = Document("_id", id)
 
         val result = collection.find(byId)
         val user = result.first()?.toUser()
@@ -30,7 +30,7 @@ class UserRepository {
 
     fun getUsers(): List<User>? {
         val client = mongoDBClient.getClient()?:return null
-        val db = client.getDatabase("development")
+        val db = client.getDatabase(databaseName)
         val collection = db.getCollection("users", UserEntity::class.java)
 
         val result = collection.find()
@@ -44,7 +44,7 @@ class UserRepository {
 
     fun createUser(user: User): Boolean {
         val client = mongoDBClient.getClient()?:return false
-        val db = client.getDatabase("development")
+        val db = client.getDatabase(databaseName)
         val collection = db.getCollection("users", UserEntity::class.java)
 
         val result = collection.insertOne(UserEntity(user))
@@ -58,15 +58,15 @@ class UserRepository {
 
     fun updateUser(user: User): Boolean {
         val client = mongoDBClient.getClient()?:return false
-        val db = client.getDatabase("development")
+        val db = client.getDatabase(databaseName)
         val collection = db.getCollection("users", UserEntity::class.java)
 
-        val byId = Filters.eq(UserEntity::id.name, user.id)
+        val byId = Document("_id", user.id)
 
         val updates = Updates.combine(
             Updates.set(UserEntity::email.name, user.email),
-            Updates.addToSet(UserEntity::surname.name, user.surname),
-            Updates.addToSet(UserEntity::firstname.name, user.firstname),
+            Updates.set(UserEntity::surname.name, user.surname),
+            Updates.set(UserEntity::firstname.name, user.firstname),
             Updates.addEachToSet(UserEntity::processIds.name,user.processIds)
         )
 
@@ -81,10 +81,10 @@ class UserRepository {
 
     fun deleteUser(id: ObjectId): Boolean {
         val client = mongoDBClient.getClient()?:return false
-        val db = client.getDatabase("development")
+        val db = client.getDatabase(databaseName)
         val collection = db.getCollection("users", UserEntity::class.java)
 
-        val byId = Filters.eq(UserEntity::id.name, id)
+        val byId = Document("_id", id)
 
         val result = collection.deleteOne(byId)
         val wasAcknowledged = result.wasAcknowledged()

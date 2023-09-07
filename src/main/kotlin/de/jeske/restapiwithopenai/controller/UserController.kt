@@ -4,7 +4,9 @@ import de.jeske.restapiwithopenai.dtos.UserDTO
 import de.jeske.restapiwithopenai.dtos.UserIdDTO
 import de.jeske.restapiwithopenai.entities.UserEntity
 import de.jeske.restapiwithopenai.modells.User
+import de.jeske.restapiwithopenai.services.UserService
 import org.bson.types.ObjectId
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -17,14 +19,15 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/user")
 class UserController {
 
+    @Autowired
+    private lateinit var userService: UserService
+
     @GetMapping
-    fun getUser(@RequestParam id: String) : UserDTO {
+    fun getUser(@RequestParam id: String) : UserDTO? {
 
-        // all of this should be done in a service
+        val objectId = ObjectId(id)
 
-        // TODO: ... get User from database ...
-
-        val user = User(ObjectId(), "Pasti", "Andi", "andipasti@tester.lol")
+        val user = userService.handleGetUserById(objectId) ?: return null
 
         return UserDTO(user)
     }
@@ -42,11 +45,9 @@ class UserController {
             firstname = firstname
         )
 
-        // all of this should be done in a service
+        val acknowledged = userService.handleCreateUser(user)
 
-        // TODO: ... add User to database
-
-        return UserIdDTO(user)
+        return if (acknowledged) UserIdDTO(user.id) else null
 
     }
 
@@ -58,22 +59,13 @@ class UserController {
         @RequestParam firstname: String?,
     ) : UserDTO? {
 
-        // all of this should be done in a service
-        // TODO: ... get User by Id from database
+        val objectId = ObjectId(id)
 
-        val oldUser = User(
-            surname = "Milli",
-            firstname = "Liter",
-            email = "milliliter@tester.lol"
-        )
+        val userDTO = UserDTO(objectId, email, surname, firstname)
 
-        val newUser = oldUser.copy(
-            email = email ?: oldUser.email,
-            surname = surname ?: oldUser.surname,
-            firstname = firstname ?: oldUser.firstname
-        )
+        val user = userService.handleUpdateUser(userDTO)
 
-        return UserDTO(newUser)
+        return if (user != null) UserDTO(user) else null
 
     }
 
@@ -82,11 +74,9 @@ class UserController {
         @RequestParam id: String
     ) : Boolean? {
 
+        val objectId = ObjectId(id)
 
-        // all of this should be done in a service
-        // TODO: ... get User by Id from database and delete him
-
-        return true
+        return userService.handleDeleteUser(objectId)
 
     }
 

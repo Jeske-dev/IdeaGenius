@@ -27,6 +27,9 @@ dependencies {
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
+    // https://mvnrepository.com/artifact/org.mockito.kotlin/mockito-kotlin
+    testImplementation("org.mockito.kotlin:mockito-kotlin:3.2.0")
+
     testImplementation("io.projectreactor:reactor-test")
 
     implementation("io.projectreactor.kotlin:reactor-kotlin-extensions")

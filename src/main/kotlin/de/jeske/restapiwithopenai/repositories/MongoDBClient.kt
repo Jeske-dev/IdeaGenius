@@ -22,18 +22,19 @@ import java.lang.Exception
 @Component
 object MongoDBClient {
 
-    // Current Issue:
-    // MongoClient is never closed, but it should be
+    //@Autowired
+    //private lateinit var args : ApplicationArguments
 
-    @Autowired
-    private lateinit var args : ApplicationArguments
+    // just for test
+    private const val _uri = "mongodb+srv://dev:082m5Zip4JWiVV4U@cluster0.3hlx91e.mongodb.net/?retryWrites=true&w=majority"
+
 
     fun getClient() : MongoClient? {
 
-        val uri = args.getOptionValues("uri").first() as String
-        // IMPORTANT: Add uri to application arguments
-        // Or use this code instead
-        // private var uri = "mongodb+srv://dev:082m5Zip4JWiVV4U@cluster0.3hlx91e.mongodb.net/?retryWrites=true&w=majority"
+
+        // for testing
+        val uri = _uri
+        //val uri = args.getOptionValues("uri").first() as String
 
         val codecRegistry = CodecRegistries.fromRegistries(
             MongoClientSettings.getDefaultCodecRegistry(),
