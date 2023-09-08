@@ -13,6 +13,7 @@ import kotlin.reflect.full.isSubtypeOf
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.full.primaryConstructor
 
+@Suppress("IMPLICIT_CAST_TO_ANY")
 class GenericCodec<T : Any>(private val clazz: Class<T>, val propertiesOrder: List<String>) : Codec<T> {
 
     override fun encode(writer: BsonWriter, value: T, encoderContext: EncoderContext) {
@@ -79,7 +80,6 @@ class GenericCodec<T : Any>(private val clazz: Class<T>, val propertiesOrder: Li
             val field = propertiesByName[fieldName]
                 ?: throw IllegalArgumentException("No field found for $fieldName")
             val fieldValue = when {
-                //null == true -> reader.readNull(fieldName)
                 field.returnType.isSubtypeOf(ObjectId::class.createType()) -> reader.readObjectId(fieldName)
                 field.returnType.isSubtypeOf(String::class.createType()) -> reader.readString(fieldName)
                 field.returnType.isSubtypeOf(List::class.createType(listOf(KTypeProjection.invariant(String::class.createType())))) -> {
@@ -91,10 +91,36 @@ class GenericCodec<T : Any>(private val clazz: Class<T>, val propertiesOrder: Li
                     reader.readEndArray()
                     list
                 }
-                field.returnType.isMarkedNullable -> reader.readNull(fieldName)
                 field.returnType.isSubtypeOf(Date::class.createType()) -> Date(reader.readDateTime(fieldName))
                 field.returnType.isSubtypeOf(Int::class.createType()) -> reader.readInt32(fieldName)
                 field.returnType.isSubtypeOf(Double::class.createType()) -> reader.readDouble(fieldName)
+                field.returnType.isSubtypeOf(ObjectId::class.createType(nullable = true)) -> {
+
+                    // READER STATE: TYPE
+
+                    val type = reader.readBsonType()
+
+                    // READER STATE: TYPE
+
+                    if (type == BsonType.NULL) {
+
+                        // READER STATE NAME
+                        // until now state is not changing anymore - so you can only read names. .readName(fieldName) doesnt change the state
+                        // I think this is just a broke feature of bson
+
+                        reader.readNull(fieldName)
+
+                    } else {
+                        reader.readObjectId(fieldName)
+                    }
+                }
+                field.returnType.isSubtypeOf(String::class.createType(nullable = true)) -> {
+                    if (reader.readBsonType() == BsonType.NULL) {
+                        reader.readNull(fieldName)
+                    } else {
+                        reader.readString(fieldName)
+                    }
+                }
                 else -> {
                     throw Exception("Unsupported type: ${field.returnType}")
                 }
