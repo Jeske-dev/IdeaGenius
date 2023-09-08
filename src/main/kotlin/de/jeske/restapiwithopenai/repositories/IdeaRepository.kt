@@ -71,11 +71,10 @@ class IdeaRepository @Autowired constructor(private val mongoDBClient: MongoDBCl
 
         val updates = Updates.combine(
             Updates.set(IdeaEntity::processId.name, idea.processId),
-            Updates.set(IdeaEntity::requestId.name, idea.requestId),
-            Updates.set(IdeaEntity::date.name, idea.date),
             Updates.set(IdeaEntity::userId.name, idea.userId),
             Updates.set(IdeaEntity::title.name, idea.title),
-            Updates.set(IdeaEntity::description.name, idea.description)
+            Updates.set(IdeaEntity::description.name, idea.description),
+            Updates.set(IdeaEntity::date.name, idea.date),
         )
 
         val result = collection.updateOne(byId, updates)

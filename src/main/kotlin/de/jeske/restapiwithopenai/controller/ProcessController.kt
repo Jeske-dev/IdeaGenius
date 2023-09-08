@@ -44,23 +44,15 @@ class ProcessController {
 
         val newProcess = Process(ObjectId(), ObjectId(), lang, Date.from(Instant.now()))
 
-        val currentRequest = Request(
-            id = ObjectId(),
-            processId = newProcess.id,
-            responseId = null,
-            choice = null,
-            date = Date.from(Instant.now())
-        )
-
         // TODO: save new process and request
 
         val question = Question(
             id = ObjectId(),
             processId = newProcess.id,
-            requestId = currentRequest.id,
-            date = Date.from(Instant.now()),
             question = "Do you thing this is an error?",
             answerChoices = listOf("Yes", "Maybe, nobody knows...", "100% No"),
+            index = 0,
+            date = Date.from(Instant.now()),
         )
 
         return QuestionDTO(question)
@@ -75,21 +67,12 @@ class ProcessController {
 
         val currentProcess = Process(ObjectId(), ObjectId(), "de", Date.from(Instant.now()))
 
-        val previousResponse = Question(
-            id = ObjectId(),
-            processId = currentProcess.id,
-            requestId = ObjectId(),
-            date = Date.from(Instant.now()),
-            question = "Do you thing this is an error?",
-            answerChoices = listOf("Yes", "Maybe, nobody knows...", "98% No"),
-        )
-
         val currentRequest = Request(
             id = ObjectId(),
             processId = currentProcess.id,
-            responseId = previousResponse.id,
-            date = Date.from(Instant.now()),
             choice = choice,
+            index = 3,
+            date = Date.from(Instant.now()),
         )
 
         // TODO: save new process and request
@@ -98,21 +81,20 @@ class ProcessController {
             val idea = Idea(
                 id = ObjectId(),
                 processId = currentProcess.id,
-                requestId = currentRequest.id,
-                date = Date.from(Instant.now()),
                 userId = currentProcess.userId,
                 title = "REST API in Kotlin with MongoDB and OpenAI",
                 description = "Develop a RESTful API with Spring Boot in Kotlin. Data should be stored in a MongoDB Database. TIPP: Use MongoDB ATlas, a cloud-based database. Process data with ChatGPT. There is a free API. The topic is left to you!",
+                date = Date.from(Instant.now())
             )
             IdeaDTO(idea)
         } else {
             val question = Question(
                 id = ObjectId(),
                 processId = currentProcess.id,
-                requestId = currentRequest.id,
-                date = Date.from(Instant.now()),
                 question = "Ok, and do you think I can do mistakes?",
                 answerChoices = listOf("No, because you are a computer", "NOOOOOOOO!", "I dont know"),
+                index = 5,
+                date = Date.from(Instant.now()),
             )
             QuestionDTO(question)
         }

@@ -14,17 +14,19 @@ class QuestionRepositoryTest {
 
     @Test
     fun getQuestionById() {
-        val testId = ObjectId("64f9c31ee4f69c3162ac2d59")
+        val testId = ObjectId("64fb11299c61af5b92c142da")
         val question = questionRepository.getQuestionById(testId)
-        val expectedProcessId = ObjectId("64f9a983e4d9842700e875dd")
+        val expectedProcessId = ObjectId("64fb0e84e6d1820aa7f3419d")
         assertNotNull(question)
         assertEquals(expectedProcessId, question?.processId)
     }
 
     @Test
     fun getAllQuestionsByProcessId() {
-        val testProcessId = ObjectId("64f9a983e4d9842700e875dd")
+        val testProcessId = ObjectId("64fb0e84e6d1820aa7f3419d")
         val questions = questionRepository.getAllQuestionsByProcessId(testProcessId)
+        val count = questions?.size
+        println("Questions Count: $count")
         assertNotNull(questions)
     }
 
@@ -32,11 +34,11 @@ class QuestionRepositoryTest {
     fun createQuestion() {
         val question = Question(
             ObjectId(),
-            ObjectId("64f9a983e4d9842700e875dd"),
-            ObjectId("64f9bf4d3ab56457e7dd56d7"),
+            ObjectId("64fb0e84e6d1820aa7f3419d"), // id of process de
+            "What do you prefer?",
+            listOf("Frontend", "Backend", "Both"),
+            2,
             Date.from(Instant.now()),
-            "What is your favourite programming language",
-            listOf("Java", "JavaScript", "Python", "C", "Other")
         )
         val acknowledged = questionRepository.createQuestion(question)
         assert(acknowledged)
@@ -47,10 +49,10 @@ class QuestionRepositoryTest {
         val question = Question(
             ObjectId(),
             ObjectId("64f5ce6e7b4d45c7c950c2e3"),
-            ObjectId("64f9a983e4d9842700e875dd"),
-            Date.from(Instant.now()),
             "Test Question",
-            listOf("Choice 1", "Choice 2", "Choice 3")
+            listOf("Choice 1", "Choice 2", "Choice 3"),
+            1,
+            Date.from(Instant.now()),
         )
         val acknowledged = questionRepository.createQuestion(question)
         assert(acknowledged)
@@ -63,12 +65,12 @@ class QuestionRepositoryTest {
     @Test
     fun updateQuestion() {
         val question = Question(
-            ObjectId("64f9c31ee4f69c3162ac2d59"),
-            ObjectId("64f9a983e4d9842700e875dd"),
-            ObjectId("64f9bf4d3ab56457e7dd56d7"),
-            Date.from(Instant.now()),
+            ObjectId("64fb11299c61af5b92c142da"),
+            ObjectId("64fb0e84e6d1820aa7f3419d"),
             "What is your favourite programming language?",
-            listOf("Java", "JavaScript", "Python", "C", "Other")
+            listOf("Java", "JavaScript", "Python", "C", "Other"),
+            0,
+            Date.from(Instant.now()),
         )
         val acknowledged = questionRepository.updateQuestion(question)
         assert(acknowledged)

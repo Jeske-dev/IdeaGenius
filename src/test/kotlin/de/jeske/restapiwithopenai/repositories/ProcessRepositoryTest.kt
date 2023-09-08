@@ -13,25 +13,39 @@ class ProcessRepositoryTest {
 
     @Test
     fun getProcessById() {
-        val testId = ObjectId("64f9a983e4d9842700e875dd")
+        val testId = ObjectId("64fb0e84e6d1820aa7f3419d")
         val process = processRepository.getProcessById(testId)
-        val expectedLang = "en"
+        val expectedLang = "de"
         assertNotNull(process)
         assertEquals(expectedLang, process?.lang)
     }
 
     @Test
     fun getAllProcessWithUserId() {
-        val testUserId = ObjectId("64f5ce6e7b4d45c7c950c2e3")
+        val testUserId = ObjectId("64fb0d02c9d972019fa88eb6")
         val processes = processRepository.getAllProcessWithUserId(testUserId)
+        val count = processes?.size
+        println("Processes Count: $count")
         assertNotNull(processes)
+    }
+
+    @Test
+    fun createProcess() {
+        val process = Process(
+            ObjectId(),
+            ObjectId("64fb0d02c9d972019fa88eb6"), // id of userOne@tester.de
+            "en",
+            date = Date.from(Instant.now())
+        )
+        val acknowledged = processRepository.createProcess(process)
+        assert(acknowledged)
     }
 
     @Test
     fun createAndDeleteProcess() {
         val process = Process(
             ObjectId(),
-            ObjectId("64f5ce6e7b4d45c7c950c2e3"),
+            ObjectId(), // just random id
             "de",
             Date.from(Instant.now())
         )
@@ -46,10 +60,10 @@ class ProcessRepositoryTest {
     @Test
     fun updateProcess() {
         val process = Process(
-            ObjectId("64f9a983e4d9842700e875dd"),
-            ObjectId("64f5ce6e7b4d45c7c950c2e3"),
+            ObjectId("64fb0f032d224e7249d20abe"),
+            ObjectId("64fb0d02c9d972019fa88eb6"), // id of userOne@tester.de
             "en",
-            Date.from(Instant.parse("2023-09-07T10:44:19.605+00:00"))
+            Date.from(Instant.now())
         )
         val acknowledge = processRepository.updateProcess(process)
         assert(acknowledge)

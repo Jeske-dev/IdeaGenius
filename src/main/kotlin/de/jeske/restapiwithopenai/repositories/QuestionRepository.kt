@@ -59,10 +59,10 @@ class QuestionRepository @Autowired constructor(private val mongoDBClient: Mongo
 
         val updates = Updates.combine(
             Updates.set(QuestionEntity::processId.name, question.processId),
-            Updates.set(QuestionEntity::requestId.name, question.requestId),
-            Updates.set(QuestionEntity::date.name, question.date),
             Updates.set(QuestionEntity::question.name, question.question),
-            Updates.set(QuestionEntity::answerChoices.name, question.answerChoices)
+            Updates.set(QuestionEntity::answerChoices.name, question.answerChoices),
+            Updates.set(QuestionEntity::index.name, question.index),
+            Updates.set(QuestionEntity::date.name, question.date),
         )
 
         val result = collection.updateOne(byId, updates)

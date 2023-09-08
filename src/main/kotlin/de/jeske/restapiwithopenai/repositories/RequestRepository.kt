@@ -1,5 +1,6 @@
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
+import de.jeske.restapiwithopenai.entities.QuestionEntity
 import de.jeske.restapiwithopenai.entities.RequestEntity
 import de.jeske.restapiwithopenai.modells.Request
 import de.jeske.restapiwithopenai.repositories.MongoDBClient
@@ -57,9 +58,14 @@ class RequestRepository @Autowired constructor(private val mongoDBClient: MongoD
         val collection = db.getCollection("requests", RequestEntity::class.java)
         val byId = Filters.eq("_id", request.id)
 
-        // Hier fehlt die Update-Logik, da 'choice' nicht in der Request-Entität enthalten ist.
+        val updates = Updates.combine(
+            Updates.set(RequestEntity::processId.name, request.processId),
+            Updates.set(RequestEntity::choice.name, request.choice),
+            Updates.set(RequestEntity::index.name, request.index),
+            Updates.set(RequestEntity::date.name, request.date),
+        )
 
-        val result = collection.updateOne(byId, Updates.set("choice", request.choice))
+        val result = collection.updateOne(byId, updates)
         val wasAcknowledged = result.wasAcknowledged()
 
         client.close()

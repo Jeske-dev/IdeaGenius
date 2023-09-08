@@ -12,7 +12,7 @@ data class UserEntity(
     val email: String,
     val surname: String,
     val firstname:String,
-    val processIds: List<String> = emptyList()
+    val processIds: List<ObjectId> = listOf()
 ) {
     constructor(user: User): this(user.id, user.email, user.surname, user.firstname, user.processIds)
 

@@ -12,5 +12,5 @@ data class User(
     val email: String,
     val surname: String,
     val firstname:String,
-    val processIds: List<String> = emptyList()
+    val processIds: List<ObjectId> = listOf()
 )

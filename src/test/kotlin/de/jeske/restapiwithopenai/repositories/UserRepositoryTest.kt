@@ -16,10 +16,10 @@ class UserRepositoryTest {
 
     @Test
     fun getUserById() {
-        val testId = ObjectId("64f5ce6e7b4d45c7c950c2e3")
+        val testId = ObjectId("64fb0d02c9d972019fa88eb6")
         val user = userRepository.getUserById(testId)
         assertNotNull(user)
-        val expectedEmail = "hannesszeski@gmail.com"
+        val expectedEmail = "userOne@tester.de"
         assertEquals(expectedEmail, user?.email)
     }
 
@@ -32,12 +32,25 @@ class UserRepositoryTest {
     }
 
     @Test
+    fun createUser() {
+        val user = User(
+            ObjectId(),
+            "userThree@tester.de",
+            "User",
+            "Three",
+            listOf()
+        )
+        val acknowledged = userRepository.createUser(user)
+        assert(acknowledged)
+    }
+
+    @Test
     fun createAndDeleteUser() {
         val user = User(
             ObjectId(),
-            "milliliter@tester.lol",
-            "liter",
-            "milli"
+            "createDeleteuser@tester.de",
+            "User",
+            "Create Delete"
         )
         val acknowledged = userRepository.createUser(user)
         assert(acknowledged)
@@ -50,14 +63,19 @@ class UserRepositoryTest {
 
     @Test
     fun updateUser() {
-        val user = User(
-            ObjectId("64f5ce6e7b4d45c7c950c2e3"),
-            "hannesszeski@gmail.com",
-            "von Szeski",
-            "Hannes"
-        )
-        val acknowledged = userRepository.updateUser(user)
-        assert(acknowledged)
+        val updateCounterUserId = ObjectId("64fb08906ba2b90d73b22f6d")
+        val user = userRepository.getUserById(updateCounterUserId)
+
+        val acknowledged = user != null
+        assertNotNull(acknowledged)
+
+        if (acknowledged) {
+            val updatedUser = user!!.copy(
+                firstname = "${user.firstname} I"
+            )
+            val acknowledged2 = userRepository.updateUser(updatedUser)
+            assert(acknowledged2)
+        }
     }
 
 }

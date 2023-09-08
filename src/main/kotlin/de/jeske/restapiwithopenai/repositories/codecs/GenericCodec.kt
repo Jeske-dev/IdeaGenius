@@ -41,9 +41,15 @@ class GenericCodec<T : Any>(private val clazz: Class<T>, val propertiesOrder: Li
                         (fieldValue as Date).time
                     )
 
+                    field.returnType.isSubtypeOf(List::class.createType(listOf(KTypeProjection.invariant(ObjectId::class.createType())))) -> {
+                        writer.writeStartArray(fieldName)
+                        (fieldValue as List<*>).forEach { writer.writeObjectId(it as ObjectId) }
+                        writer.writeEndArray()
+                    }
+
                     field.returnType.isSubtypeOf(List::class.createType(listOf(KTypeProjection.invariant(String::class.createType())))) -> {
                         writer.writeStartArray(fieldName)
-                        (fieldValue as List<*>).forEach { writer.writeString(it.toString()) }
+                        (fieldValue as List<*>).forEach { writer.writeString(it as String) }
                         writer.writeEndArray()
                     }
 
@@ -52,8 +58,6 @@ class GenericCodec<T : Any>(private val clazz: Class<T>, val propertiesOrder: Li
                         fieldName,
                         fieldValue as Double
                     )
-
-                    field.returnType.isMarkedNullable -> writer.writeNull(fieldName)
 
                     else -> {
                         throw Exception("Unsupported type: ${field.returnType}")
@@ -82,16 +86,34 @@ class GenericCodec<T : Any>(private val clazz: Class<T>, val propertiesOrder: Li
             val fieldValue = when {
                 field.returnType.isSubtypeOf(ObjectId::class.createType()) -> reader.readObjectId(fieldName)
                 field.returnType.isSubtypeOf(String::class.createType()) -> reader.readString(fieldName)
-                field.returnType.isSubtypeOf(List::class.createType(listOf(KTypeProjection.invariant(String::class.createType())))) -> {
-                    val list = mutableListOf<String>()
-                    reader.readStartArray()
-                    while (reader.readBsonType() != BsonType.END_OF_DOCUMENT) {
-                        list.add(reader.readString())
+                field.returnType.isSubtypeOf(List::class.createType(listOf(KTypeProjection.invariant(ObjectId::class.createType())))) -> {
+                    val list = mutableListOf<ObjectId>()
+                    try {
+                        reader.readStartArray()
+                        while (reader.readBsonType() != BsonType.END_OF_DOCUMENT) {
+                            list.add(reader.readObjectId())
+                        }
+                        reader.readEndArray()
+                    } catch (e: java.lang.Exception) {
+                        println("Codec Exception: cant fetch list of objectIds")
+                        println(e.message)
                     }
-                    reader.readEndArray()
                     list
                 }
-                field.returnType.isMarkedNullable -> reader.readNull(fieldName)
+                field.returnType.isSubtypeOf(List::class.createType(listOf(KTypeProjection.invariant(String::class.createType())))) -> {
+                    val list = mutableListOf<String>()
+                    try {
+                        reader.readStartArray()
+                        while (reader.readBsonType() != BsonType.END_OF_DOCUMENT) {
+                            list.add(reader.readString())
+                        }
+                        reader.readEndArray()
+                    } catch (e: java.lang.Exception) {
+                        println("Codec Exception: cant fetch list of string")
+                        println(e.message)
+                    }
+                    list
+                }
                 field.returnType.isSubtypeOf(Date::class.createType()) -> Date(reader.readDateTime(fieldName))
                 field.returnType.isSubtypeOf(Int::class.createType()) -> reader.readInt32(fieldName)
                 field.returnType.isSubtypeOf(Double::class.createType()) -> reader.readDouble(fieldName)

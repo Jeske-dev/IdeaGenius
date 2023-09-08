@@ -14,17 +14,19 @@ class RequestRepositoryTest {
 
     @Test
     fun getRequestById() {
-        val testId = ObjectId("64f9bf4d3ab56457e7dd56d7")
+        val testId = ObjectId("64fb1238f885080c0e8d563e")
         val request = requestRepository.getRequestById(testId)
-        val expectedChoice = "1"
+        val expectedIndex = 1
         assertNotNull(request)
-        assertEquals(expectedChoice, request?.choice)
+        assertEquals(expectedIndex, request?.index)
     }
 
     @Test
     fun getAllRequestsByProcessId() {
-        val testProcessId = ObjectId("64f9a983e4d9842700e875dd")
+        val testProcessId = ObjectId("64fb0e84e6d1820aa7f3419d")
         val requests = requestRepository.getAllRequestsByProcessId(testProcessId)
+        val count = requests?.size
+        println("Requests Count: $count")
         assertNotNull(requests)
     }
 
@@ -32,9 +34,9 @@ class RequestRepositoryTest {
     fun createRequest() {
         val request = Request(
             ObjectId(),
-            ObjectId("64f9a983e4d9842700e875dd"),
-            null,
-            null,
+            ObjectId("64fb1238f885080c0e8d563e"),
+            "Both",
+            3,
             Date.from(Instant.now())
         )
         val acknowledged = requestRepository.createRequest(request)
@@ -46,8 +48,8 @@ class RequestRepositoryTest {
         val request = Request(
             ObjectId(),
             ObjectId("64f9a983e4d9842700e875dd"),
-            null,
-            null,
+            "first",
+            2,
             Date.from(Instant.now())
         )
         val acknowledged = requestRepository.createRequest(request)
@@ -61,10 +63,10 @@ class RequestRepositoryTest {
     @Test
     fun updateRequest() {
         val request = Request(
-            ObjectId("64f9bf4d3ab56457e7dd56d7"),
-            ObjectId("64f9a983e4d9842700e875dd"),
-            null,
-            "1",
+            ObjectId("64fb1238f885080c0e8d563e"),
+            ObjectId("64fb0e84e6d1820aa7f3419d"),
+            "Other",
+            1,
             Date.from(Instant.now())
         )
         val acknowledge = requestRepository.updateRequest(request)
