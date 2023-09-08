@@ -22,9 +22,16 @@ class IdeaRepositoryTest {
     }
 
     @Test
-    fun getAllIdeasByProcessId() {
+    fun getIdeaByProcessId() {
         val testProcessId = ObjectId("64f9a983e4d9842700e875dd")
-        val ideas = ideaRepository.getAllIdeasByProcessId(testProcessId)
+        val ideas = ideaRepository.getIdeaByProcessId(testProcessId)
+        assertNotNull(ideas)
+    }
+
+    @Test
+    fun getAllIdeasByUserId() {
+        val testUserId = ObjectId("64f5ce6e7b4d45c7c950c2e3")
+        val ideas = ideaRepository.getAllIdeasByUserId(testUserId)
         assertNotNull(ideas)
     }
 

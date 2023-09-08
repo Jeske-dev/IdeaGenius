@@ -6,7 +6,6 @@ import de.jeske.restapiwithopenai.repositories.MongoDBClient
 import org.bson.types.ObjectId
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
-import java.util.*
 
 @Repository
 class IdeaRepository @Autowired constructor(private val mongoDBClient: MongoDBClient) {
@@ -26,11 +25,24 @@ class IdeaRepository @Autowired constructor(private val mongoDBClient: MongoDBCl
         return idea
     }
 
-    fun getAllIdeasByProcessId(processId: ObjectId): List<Idea>? {
+    fun getIdeaByProcessId(processId: ObjectId): Idea? {
         val client = mongoDBClient.getClient() ?: return null
         val db = client.getDatabase(databaseName)
         val collection = db.getCollection("ideas", IdeaEntity::class.java)
         val byProcessId = Filters.eq("processId", processId)
+
+        val result = collection.find(byProcessId)
+        val idea = result.first()
+
+        client.close()
+        return idea?.toIdea()
+    }
+
+    fun getAllIdeasByUserId(processId: ObjectId): List<Idea>? {
+        val client = mongoDBClient.getClient() ?: return null
+        val db = client.getDatabase(databaseName)
+        val collection = db.getCollection("ideas", IdeaEntity::class.java)
+        val byProcessId = Filters.eq("userId", processId)
 
         val result = collection.find(byProcessId)
         val ideas = result.toList().map { it.toIdea() }
