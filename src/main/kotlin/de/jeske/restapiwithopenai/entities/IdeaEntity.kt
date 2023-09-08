@@ -11,13 +11,12 @@ data class IdeaEntity(
     @Id
     val _id: ObjectId = ObjectId(),
     val processId: ObjectId,
-    val requestId: ObjectId,
-    val date: Date,
     val userId: ObjectId,
     val title: String,
     val description: String,
+    val date: Date,
 ) {
-    constructor(idea: Idea) : this(idea.id, idea.processId, idea.requestId, idea.date, idea.userId, idea.title, idea.description)
+    constructor(idea: Idea) : this(idea.id, idea.processId, idea.userId, idea.title, idea.description, idea.date)
 
-    fun toIdea() : Idea = Idea(_id, processId, requestId, date, userId, title, description)
+    fun toIdea() : Idea = Idea(_id, processId, userId, title, description, date)
 }

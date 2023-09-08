@@ -6,9 +6,8 @@ import java.util.Date
 data class Idea(
     val id: ObjectId = ObjectId(),
     val processId: ObjectId,
-    val requestId: ObjectId,
-    val date: Date,
     val userId: ObjectId,
     val title: String,
     val description: String,
+    val date: Date,
 )

@@ -11,11 +11,11 @@ data class RequestEntity(
     @Id
     val _id: ObjectId = ObjectId(),
     val processId: ObjectId,
-    val responseId: ObjectId?,
-    val choice: String?,
+    val choice: String,
+    val index: Int,
     val date: Date
 ) {
-    constructor(request: Request) : this(request.id, request.processId, request.responseId, request.choice, request.date)
+    constructor(request: Request) : this(request.id, request.processId, request.choice, request.index, request.date)
 
-    fun toRequest() : Request = Request(_id, processId, responseId, choice, date)
+    fun toRequest() : Request = Request(_id, processId, choice, index, date)
 }

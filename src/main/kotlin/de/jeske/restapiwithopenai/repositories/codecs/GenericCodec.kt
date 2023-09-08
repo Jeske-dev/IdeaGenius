@@ -13,6 +13,7 @@ import kotlin.reflect.full.isSubtypeOf
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.full.primaryConstructor
 
+@Suppress("IMPLICIT_CAST_TO_ANY")
 class GenericCodec<T : Any>(private val clazz: Class<T>, val propertiesOrder: List<String>) : Codec<T> {
 
     override fun encode(writer: BsonWriter, value: T, encoderContext: EncoderContext) {
@@ -79,7 +80,6 @@ class GenericCodec<T : Any>(private val clazz: Class<T>, val propertiesOrder: Li
             val field = propertiesByName[fieldName]
                 ?: throw IllegalArgumentException("No field found for $fieldName")
             val fieldValue = when {
-                //null == true -> reader.readNull(fieldName)
                 field.returnType.isSubtypeOf(ObjectId::class.createType()) -> reader.readObjectId(fieldName)
                 field.returnType.isSubtypeOf(String::class.createType()) -> reader.readString(fieldName)
                 field.returnType.isSubtypeOf(List::class.createType(listOf(KTypeProjection.invariant(String::class.createType())))) -> {
