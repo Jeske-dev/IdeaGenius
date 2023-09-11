@@ -8,7 +8,9 @@ import de.jeske.restapiwithopenai.repositories.ProcessRepository
 import de.jeske.restapiwithopenai.repositories.UserRepository
 import org.bson.types.ObjectId
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
+import org.springframework.web.server.ResponseStatusException
 import java.time.Instant
 import java.util.Date
 
@@ -30,11 +32,13 @@ class ProcessService {
     @Autowired
     private lateinit var userRepository: UserRepository
 
-    fun handleGetProcessById(id: ObjectId) : Process? = processRepository.getProcessById(id)
+    fun handleGetProcessById(id: ObjectId) : Process = processRepository.getProcessById(id)
+        ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Can't find process with id ${id.toHexString()}")
 
-    fun handleStartProcess(userId: ObjectId, lang: String) : Question? {
+    fun handleStartProcess(userId: ObjectId, lang: String) : Question {
 
-        val user = userRepository.getUserById(userId) ?: return null
+        val user = userRepository.getUserById(userId)
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Can't find user with id ${userId.toHexString()}")
 
         val process = Process(
             ObjectId(),
@@ -46,9 +50,13 @@ class ProcessService {
         val userProcesses = user.processIds.toMutableList().apply {
             add(process.id)
         }
-        userRepository.updateUser(user.copy(processIds = userProcesses))
+        userRepository.updateUser(user.copy(processIds = userProcesses)).also {
+            if (!it) throw ResponseStatusException(HttpStatus.CONFLICT, "Can't update users list of process ids. This is a error caused by internal MongoDB Database.")
+        }
 
-        processRepository.createProcess(process)
+        processRepository.createProcess(process).also {
+            if (!it) throw ResponseStatusException(HttpStatus.CONFLICT, "Can't create process. This is a error caused by internal MongoDB Database.")
+        }
 
         // TODO: switch to, getQuestionFromChatGPT
         val question = Question(
@@ -60,14 +68,17 @@ class ProcessService {
             date = Date.from(Instant.now()),
         )
 
-        questionRepository.createQuestion(question)
+        questionRepository.createQuestion(question).also {
+            if (!it) throw ResponseStatusException(HttpStatus.CONFLICT, "Can't create question. This is a error caused by internal MongoDB Database.")
+        }
 
         return question
     }
 
-    fun handleResponse(processId: ObjectId, choice: String) : Response? {
+    fun handleResponse(processId: ObjectId, choice: String) : Response {
 
-        val process = processRepository.getProcessById(processId) ?: return null
+        val process = processRepository.getProcessById(processId)
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Can't find process with id ${processId.toHexString()}")
 
         val questions = questionRepository.getAllQuestionsByProcessId(processId)!!
         val requestIndex = questions.size*2-1
@@ -80,7 +91,9 @@ class ProcessService {
             Date.from(Instant.now())
         )
 
-        requestRepository.createRequest(request)
+        requestRepository.createRequest(request).also {
+            if (!it) throw ResponseStatusException(HttpStatus.CONFLICT, "Can't create request. This is a error caused by internal MongoDB Database.")
+        }
 
         if (requestIndex > 8) {
 
@@ -93,7 +106,9 @@ class ProcessService {
                 date = Date.from(Instant.now())
             )
 
-            ideaRepository.createIdea(idea)
+            ideaRepository.createIdea(idea).also {
+                if (!it) throw ResponseStatusException(HttpStatus.CONFLICT, "Can't create idea. This is a error caused by internal MongoDB Database.")
+            }
 
             return idea
 
@@ -108,7 +123,9 @@ class ProcessService {
                 date = Date.from(Instant.now()),
             )
 
-            questionRepository.createQuestion(question)
+            questionRepository.createQuestion(question).also {
+                if (!it) throw ResponseStatusException(HttpStatus.CONFLICT, "Can't create question. This is a error caused by internal MongoDB Database.")
+            }
 
             return question
 

@@ -35,7 +35,7 @@ class UserService {
         val acknowledged = userRepository.updateUser(updatedUser)
         return if (acknowledged) {
             updatedUser
-        } else throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Can't upgrade user. This is a error caused by internal MongoDB Database.")
+        } else throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Can't update user. This is a error caused by internal MongoDB Database.")
     }
 
     fun handleDeleteUser(userId: ObjectId) : Boolean = userRepository.deleteUser(userId).also {

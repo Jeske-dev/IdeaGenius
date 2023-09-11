@@ -11,11 +11,13 @@ import de.jeske.restapiwithopenai.modells.Request
 import de.jeske.restapiwithopenai.services.ProcessService
 import org.bson.types.ObjectId
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.server.ResponseStatusException
 import java.time.Instant
 import java.util.Date
 import java.util.Random
@@ -30,11 +32,11 @@ class ProcessController {
     @GetMapping
     fun getProcess(
         @RequestParam id: String
-    ) : ProcessDTO? {
+    ) : ProcessDTO {
 
         val processId = ObjectId(id)
 
-        val process = processService.handleGetProcessById(processId)?: return null
+        val process = processService.handleGetProcessById(processId)
 
         return ProcessDTO(process)
 
@@ -44,11 +46,11 @@ class ProcessController {
     fun startProcess(
         @RequestParam id: String,
         @RequestParam lang: String
-    ) : QuestionDTO? {
+    ) : QuestionDTO {
 
         val userId = ObjectId(id)
 
-        val question = processService.handleStartProcess(userId, lang) ?: return null
+        val question = processService.handleStartProcess(userId, lang)
 
         return QuestionDTO(question)
 
@@ -58,7 +60,7 @@ class ProcessController {
     fun response(
         @RequestParam id: String,
         @RequestParam choice: String
-    ) : ResponseDTO? {
+    ) : ResponseDTO {
 
         val processId = ObjectId(id)
 
@@ -67,7 +69,7 @@ class ProcessController {
         return when (response) {
             is Idea -> IdeaDTO(response)
             is Question -> QuestionDTO(response)
-            else -> null
+            else -> throw TypeNotPresentException("response", null)
         }
 
     }
