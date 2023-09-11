@@ -1,13 +1,12 @@
+package de.jeske.restapiwithopenai.repositories
+
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
-import de.jeske.restapiwithopenai.entities.QuestionEntity
 import de.jeske.restapiwithopenai.entities.RequestEntity
 import de.jeske.restapiwithopenai.modells.Request
-import de.jeske.restapiwithopenai.repositories.MongoDBClient
 import org.bson.types.ObjectId
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository
-import java.util.*
 
 @Repository
 class RequestRepository @Autowired constructor(private val mongoDBClient: MongoDBClient) {

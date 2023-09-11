@@ -47,21 +47,19 @@ class UserController {
 
         val acknowledged = userService.handleCreateUser(user)
 
-        return if (acknowledged) UserIdDTO(user.id) else null
+        return if (acknowledged) UserIdDTO(user) else null
 
     }
 
     @PutMapping
     fun updateUser(
         @RequestParam id: String,
-        @RequestParam email: String?,
-        @RequestParam surname: String?,
-        @RequestParam firstname: String?,
+        @RequestParam email: String,
+        @RequestParam surname: String,
+        @RequestParam firstname: String,
     ) : UserDTO? {
 
-        val objectId = ObjectId(id)
-
-        val userDTO = UserDTO(objectId, email, surname, firstname)
+        val userDTO = UserDTO(id, email, surname, firstname)
 
         val user = userService.handleUpdateUser(userDTO)
 

@@ -3,13 +3,14 @@ package de.jeske.restapiwithopenai.controller
 import de.jeske.restapiwithopenai.dtos.IdeaDTO
 import de.jeske.restapiwithopenai.dtos.ProcessDTO
 import de.jeske.restapiwithopenai.dtos.QuestionDTO
-import de.jeske.restapiwithopenai.dtos.Response
-import de.jeske.restapiwithopenai.entities.*
+import de.jeske.restapiwithopenai.dtos.ResponseDTO
 import de.jeske.restapiwithopenai.modells.Idea
 import de.jeske.restapiwithopenai.modells.Process
 import de.jeske.restapiwithopenai.modells.Question
 import de.jeske.restapiwithopenai.modells.Request
+import de.jeske.restapiwithopenai.services.ProcessService
 import org.bson.types.ObjectId
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -23,14 +24,17 @@ import java.util.Random
 @RequestMapping("/process")
 class ProcessController {
 
+    @Autowired
+    private lateinit var processService: ProcessService
+
     @GetMapping
     fun getProcess(
         @RequestParam id: String
     ) : ProcessDTO? {
 
-        // TODO: get process from database
+        val processId = ObjectId(id)
 
-        val process = Process(ObjectId(), ObjectId(), "de", Date.from(Instant.now()))
+        val process = processService.handleGetProcessById(processId)?: return null
 
         return ProcessDTO(process)
 
@@ -42,18 +46,9 @@ class ProcessController {
         @RequestParam lang: String
     ) : QuestionDTO? {
 
-        val newProcess = Process(ObjectId(), ObjectId(), lang, Date.from(Instant.now()))
+        val userId = ObjectId(id)
 
-        // TODO: save new process and request
-
-        val question = Question(
-            id = ObjectId(),
-            processId = newProcess.id,
-            question = "Do you thing this is an error?",
-            answerChoices = listOf("Yes", "Maybe, nobody knows...", "100% No"),
-            index = 0,
-            date = Date.from(Instant.now()),
-        )
+        val question = processService.handleStartProcess(userId, lang) ?: return null
 
         return QuestionDTO(question)
 
@@ -63,40 +58,16 @@ class ProcessController {
     fun response(
         @RequestParam id: String,
         @RequestParam choice: String
-    ) : Response? {
+    ) : ResponseDTO? {
 
-        val currentProcess = Process(ObjectId(), ObjectId(), "de", Date.from(Instant.now()))
+        val processId = ObjectId(id)
 
-        val currentRequest = Request(
-            id = ObjectId(),
-            processId = currentProcess.id,
-            choice = choice,
-            index = 3,
-            date = Date.from(Instant.now()),
-        )
+        val response = processService.handleResponse(processId, choice)
 
-        // TODO: save new process and request
-
-        return if (Random().nextInt(2) == 1) {
-            val idea = Idea(
-                id = ObjectId(),
-                processId = currentProcess.id,
-                userId = currentProcess.userId,
-                title = "REST API in Kotlin with MongoDB and OpenAI",
-                description = "Develop a RESTful API with Spring Boot in Kotlin. Data should be stored in a MongoDB Database. TIPP: Use MongoDB ATlas, a cloud-based database. Process data with ChatGPT. There is a free API. The topic is left to you!",
-                date = Date.from(Instant.now())
-            )
-            IdeaDTO(idea)
-        } else {
-            val question = Question(
-                id = ObjectId(),
-                processId = currentProcess.id,
-                question = "Ok, and do you think I can do mistakes?",
-                answerChoices = listOf("No, because you are a computer", "NOOOOOOOO!", "I dont know"),
-                index = 5,
-                date = Date.from(Instant.now()),
-            )
-            QuestionDTO(question)
+        return when (response) {
+            is Idea -> IdeaDTO(response)
+            is Question -> QuestionDTO(response)
+            else -> null
         }
 
     }

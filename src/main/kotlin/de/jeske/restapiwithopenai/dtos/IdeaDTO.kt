@@ -5,17 +5,17 @@ import org.bson.types.ObjectId
 import java.util.Date
 
 data class IdeaDTO(
-    val id: ObjectId = ObjectId(),
-    val processId: ObjectId,
-    val userId: ObjectId,
+    val id: String,
+    val processId: String,
+    val userId: String,
     val title: String,
     val description: String,
     val date: Date,
-) : Response("idea") {
+) : ResponseDTO("idea") {
     constructor(idea: Idea): this(
-        idea.id,
-        idea.processId,
-        idea.userId,
+        idea.id.toHexString(),
+        idea.processId.toHexString(),
+        idea.userId.toHexString(),
         idea.title,
         idea.description,
         idea.date,

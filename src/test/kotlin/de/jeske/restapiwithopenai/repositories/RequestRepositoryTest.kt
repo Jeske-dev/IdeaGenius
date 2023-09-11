@@ -1,6 +1,5 @@
 package de.jeske.restapiwithopenai.repositories
 
-import RequestRepository
 import de.jeske.restapiwithopenai.modells.Request
 import org.bson.types.ObjectId
 import org.junit.jupiter.api.Assertions.*

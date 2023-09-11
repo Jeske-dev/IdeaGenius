@@ -10,4 +10,4 @@ data class Question (
     val answerChoices: List<String> = emptyList(),
     val index: Int,
     val date: Date,
-)
+) : Response()

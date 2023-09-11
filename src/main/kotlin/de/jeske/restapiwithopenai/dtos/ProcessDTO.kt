@@ -5,10 +5,15 @@ import org.bson.types.ObjectId
 import java.util.Date
 
 data class ProcessDTO(
-    val id: ObjectId = ObjectId(),
-    val userId: ObjectId,
+    val id: String,
+    val userId: String,
     val lang: String,
     val date: Date
 ) {
-    constructor(process: Process): this(process.id, process.userId, process.lang, process.date)
+    constructor(process: Process): this(
+        process.id.toHexString(),
+        process.userId.toHexString(),
+        process.lang,
+        process.date
+    )
 }

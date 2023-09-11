@@ -10,4 +10,4 @@ data class Idea(
     val title: String,
     val description: String,
     val date: Date,
-)
+) : Response()

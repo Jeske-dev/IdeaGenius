@@ -5,16 +5,16 @@ import org.bson.types.ObjectId
 import java.util.*
 
 data class QuestionDTO (
-    val id: ObjectId = ObjectId(),
-    val processId: ObjectId,
+    val id: String,
+    val processId: String,
     val question: String,
     val answerChoices: List<String> = emptyList(),
     val index: Int,
     val date: Date,
-) : Response("question") {
+) : ResponseDTO("question") {
     constructor(question: Question): this(
-        question.id,
-        question.processId,
+        question.id.toHexString(),
+        question.processId.toHexString(),
         question.question,
         question.answerChoices,
         question.index,

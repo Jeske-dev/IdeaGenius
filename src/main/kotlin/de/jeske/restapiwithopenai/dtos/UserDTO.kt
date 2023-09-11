@@ -5,11 +5,17 @@ import de.jeske.restapiwithopenai.modells.User
 import org.bson.types.ObjectId
 
 data class UserDTO(
-    val id: ObjectId,
+    val id: String,
     val email: String?,
     val surname: String?,
     val firstname:String?,
-    val processIds: List<ObjectId> = listOf()
+    val processIds: List<String> = listOf()
 ) {
-    constructor(user: User): this(user.id, user.email, user.surname, user.firstname, user.processIds)
+    constructor(user: User): this(
+        user.id.toHexString(),
+        user.email,
+        user.surname,
+        user.firstname,
+        user.processIds.map { it.toHexString() }
+    )
 }

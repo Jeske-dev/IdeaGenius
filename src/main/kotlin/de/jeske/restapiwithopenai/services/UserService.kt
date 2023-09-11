@@ -19,7 +19,8 @@ class UserService {
     fun handleCreateUser(user: User) : Boolean = userRepository.createUser(user)
 
     fun handleUpdateUser(userDTO: UserDTO) : User? {
-        val originalUser = userRepository.getUserById(userDTO.id) ?: return null
+        val userId = ObjectId(userDTO.id)
+        val originalUser = userRepository.getUserById(userId) ?: return null
         val updatedUser = originalUser.copy(
             email = userDTO.email ?: originalUser.email,
             surname = userDTO.surname ?: originalUser.surname,
