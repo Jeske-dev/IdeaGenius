@@ -23,11 +23,11 @@ class UserController {
     private lateinit var userService: UserService
 
     @GetMapping
-    fun getUser(@RequestParam id: String) : UserDTO? {
+    fun getUser(@RequestParam id: String) : UserDTO {
 
         val objectId = ObjectId(id)
 
-        val user = userService.handleGetUserById(objectId) ?: return null
+        val user = userService.handleGetUserById(objectId)
 
         return UserDTO(user)
     }
@@ -47,7 +47,7 @@ class UserController {
 
         val acknowledged = userService.handleCreateUser(user)
 
-        return if (acknowledged) UserIdDTO(user) else null
+        return UserIdDTO(user)
 
     }
 
@@ -63,7 +63,7 @@ class UserController {
 
         val user = userService.handleUpdateUser(userDTO)
 
-        return if (user != null) UserDTO(user) else null
+        return UserDTO(user)
 
     }
 
