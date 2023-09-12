@@ -41,6 +41,9 @@ dependencies {
 
     implementation("org.mongodb:mongodb-driver-kotlin-coroutine:4.10.1")
 
+    // OpenAI
+    // https://github.com/Aallam/openai-kotlin
+    implementation("com.aallam.openai:openai-client:3.4.0")
 }
 
 tasks.withType<KotlinCompile> {

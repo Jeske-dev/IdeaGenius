@@ -32,10 +32,14 @@ class ProcessService {
     @Autowired
     private lateinit var userRepository: UserRepository
 
+
+    @Autowired
+    private lateinit var chatGPTService: ChatGPTService
+
     fun handleGetProcessById(id: ObjectId) : Process = processRepository.getProcessById(id)
         ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Can't find process with id ${id.toHexString()}")
 
-    fun handleStartProcess(userId: ObjectId, lang: String) : Question {
+    suspend fun handleStartProcess(userId: ObjectId, lang: String) : Question {
 
         val user = userRepository.getUserById(userId)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Can't find user with id ${userId.toHexString()}")
@@ -58,14 +62,15 @@ class ProcessService {
             if (!it) throw ResponseStatusException(HttpStatus.CONFLICT, "Can't create process. This is a error caused by internal MongoDB Database.")
         }
 
-        // TODO: switch to, getQuestionFromChatGPT
+        val questionChatGPTDTO = chatGPTService.getQuestion()
         val question = Question(
-            id = ObjectId(),
-            processId = process.id,
-            question = "First Question",
-            answerChoices = listOf("this", "is", "just", "a", "mock", "question"),
-            index = 0,
-            date = Date.from(Instant.now()),
+            ObjectId(),
+            process.id,
+            questionChatGPTDTO.question,
+            questionChatGPTDTO.questionTopic,
+            questionChatGPTDTO.answerChoices,
+            0,
+            Date.from(Instant.now())
         )
 
         questionRepository.createQuestion(question).also {
@@ -75,7 +80,7 @@ class ProcessService {
         return question
     }
 
-    fun handleResponse(processId: ObjectId, choice: String) : Response {
+    suspend fun handleResponse(processId: ObjectId, choice: String) : Response {
 
         val process = processRepository.getProcessById(processId)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Can't find process with id ${processId.toHexString()}")
@@ -98,12 +103,12 @@ class ProcessService {
         if (requestIndex > 8) {
 
             val idea = Idea(
-                id = ObjectId(),
-                processId = process.id,
-                userId = process.userId,
-                title = "Your final project idea",
-                description = "this is just a mock idea",
-                date = Date.from(Instant.now())
+                ObjectId(),
+                process.id,
+                process.userId,
+                "MockUp Idea",
+                "MockUp Project description",
+                Date.from(Instant.now())
             )
 
             ideaRepository.createIdea(idea).also {
@@ -114,13 +119,15 @@ class ProcessService {
 
         } else {
 
+            val questionChatGPTDTO = chatGPTService.getQuestion()
             val question = Question(
-                id = ObjectId(),
-                processId = process.id,
-                question = "Another question",
-                answerChoices = listOf("this", "is", "just", "a", "mock", "question"),
-                index = requestIndex + 1,
-                date = Date.from(Instant.now()),
+                ObjectId(),
+                process.id,
+                questionChatGPTDTO.question,
+                questionChatGPTDTO.questionTopic,
+                questionChatGPTDTO.answerChoices,
+                requestIndex + 1,
+                Date.from(Instant.now())
             )
 
             questionRepository.createQuestion(question).also {

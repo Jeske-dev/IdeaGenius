@@ -43,7 +43,7 @@ class ProcessController {
     }
 
     @PostMapping("/start")
-    fun startProcess(
+    suspend fun startProcess(
         @RequestParam id: String,
         @RequestParam lang: String
     ) : QuestionDTO {
@@ -57,7 +57,7 @@ class ProcessController {
     }
 
     @PostMapping("/response")
-    fun response(
+    suspend fun response(
         @RequestParam id: String,
         @RequestParam choice: String
     ) : ResponseDTO {

@@ -12,11 +12,12 @@ data class QuestionEntity (
     val _id: ObjectId = ObjectId(),
     val processId: ObjectId,
     val question: String,
+    val questionTopic: String,
     val answerChoices: List<String> = emptyList(),
     val index: Int,
     val date: Date,
 ) {
-    constructor(question: Question) : this(question.id, question.processId, question.question, question.answerChoices, question.index, question.date, )
+    constructor(question: Question) : this(question.id, question.processId, question.question, question.questionTopic, question.answerChoices, question.index, question.date, )
 
-    fun toQuestion() : Question = Question(_id, processId, question, answerChoices, index, date, )
+    fun toQuestion() : Question = Question(_id, processId, question, questionTopic, answerChoices, index, date, )
 }
