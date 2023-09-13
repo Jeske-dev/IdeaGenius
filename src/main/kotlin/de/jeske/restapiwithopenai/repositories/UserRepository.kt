@@ -1,9 +1,9 @@
 package de.jeske.restapiwithopenai.repositories
 
-import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
 import de.jeske.restapiwithopenai.entities.UserEntity
 import de.jeske.restapiwithopenai.modells.User
+import de.jeske.restapiwithopenai.repositories.clients.MongoDBClient
 import org.bson.Document
 import org.bson.types.ObjectId
 import org.springframework.beans.factory.annotation.Autowired

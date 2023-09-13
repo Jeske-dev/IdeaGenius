@@ -1,14 +1,11 @@
 package de.jeske.restapiwithopenai.repositories
 
 import de.jeske.restapiwithopenai.modells.User
+import de.jeske.restapiwithopenai.repositories.clients.MongoDBClient
 import org.bson.types.ObjectId
 import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.extension.ExtendWith
-import org.mockito.InjectMocks
-import org.mockito.Mock
-import org.mockito.junit.jupiter.MockitoExtension
 
 class UserRepositoryTest {
 

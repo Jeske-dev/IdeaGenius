@@ -1,6 +1,7 @@
 package de.jeske.restapiwithopenai.repositories
 
 import de.jeske.restapiwithopenai.modells.Question
+import de.jeske.restapiwithopenai.repositories.clients.MongoDBClient
 import org.bson.types.ObjectId
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test

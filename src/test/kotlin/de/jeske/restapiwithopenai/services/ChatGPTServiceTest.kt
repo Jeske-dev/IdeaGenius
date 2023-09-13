@@ -2,13 +2,66 @@ package de.jeske.restapiwithopenai.services
 
 import de.jeske.restapiwithopenai.dtos.IdeaChatGPTDTO
 import de.jeske.restapiwithopenai.dtos.QuestionChatGPTDTO
+import de.jeske.restapiwithopenai.modells.Question
+import de.jeske.restapiwithopenai.modells.Request
+import de.jeske.restapiwithopenai.modells.TopicChoicePair
+import org.bson.types.ObjectId
 import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.Assertions.*
+import java.time.Instant
+import java.util.*
 
 class ChatGPTServiceTest {
 
     private val chatGPTService = ChatGPTService()
+
+    @Test
+    fun pair() {
+        val questions = listOf(
+            Question(
+                ObjectId(),
+                ObjectId(),
+                "How are you today?",
+                "mood",
+                listOf("Good", "Bad",),
+                0,
+                Date.from(Instant.now())
+            ),
+            Question(
+                ObjectId(),
+                ObjectId(),
+                "Why are you at Staffbase?",
+                "internship reason",
+                listOf("learning new things", "meeting new people",),
+                2,
+                Date.from(Instant.now())
+            ),
+        )
+        val requests = listOf(
+            Request(
+                ObjectId(),
+                ObjectId(),
+                "Good",
+                1,
+                Date.from(Instant.now())
+            ),
+            Request(
+                ObjectId(),
+                ObjectId(),
+                "learning new things",
+                3,
+                Date.from(Instant.now())
+            ),
+        )
+
+        val expected = listOf(
+            TopicChoicePair("mood", "Good"),
+            TopicChoicePair("internship reason", "learning new things"),
+        )
+
+        assertEquals(expected.toString(), chatGPTService.pair(questions, requests).toString())
+    }
 
     @Test
     fun parseQuestion() {

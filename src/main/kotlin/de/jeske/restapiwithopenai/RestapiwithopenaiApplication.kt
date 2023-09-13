@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @SpringBootApplication(exclude = [DataSourceAutoConfiguration::class])
-@EnableConfigurationProperties(ChatGPTController::class)
 @FlowPreview
 @ExperimentalCoroutinesApi
 class RestapiwithopenaiApplication

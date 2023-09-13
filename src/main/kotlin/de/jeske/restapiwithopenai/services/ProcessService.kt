@@ -36,10 +36,10 @@ class ProcessService {
     @Autowired
     private lateinit var chatGPTService: ChatGPTService
 
-    fun handleGetProcessById(id: ObjectId) : Process = processRepository.getProcessById(id)
+    fun getProcessById(id: ObjectId) : Process = processRepository.getProcessById(id)
         ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Can't find process with id ${id.toHexString()}")
 
-    suspend fun handleStartProcess(userId: ObjectId, lang: String) : Question {
+    suspend fun startProcess(userId: ObjectId, lang: String) : Question {
 
         val user = userRepository.getUserById(userId)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Can't find user with id ${userId.toHexString()}")
@@ -62,7 +62,12 @@ class ProcessService {
             if (!it) throw ResponseStatusException(HttpStatus.CONFLICT, "Can't create process. This is a error caused by internal MongoDB Database.")
         }
 
-        val questionChatGPTDTO = chatGPTService.getQuestion()
+        val questions = questionRepository.getAllQuestionsByProcessId(process.id)
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Can't find questions with processId ${process.id.toHexString()}")
+        val requests = requestRepository.getAllRequestsByProcessId(process.id)
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Can't find requests with processId ${process.id.toHexString()}")
+
+        val questionChatGPTDTO = chatGPTService.getQuestion(questions, requests)
         val question = Question(
             ObjectId(),
             process.id,
@@ -80,13 +85,16 @@ class ProcessService {
         return question
     }
 
-    suspend fun handleResponse(processId: ObjectId, choice: String) : Response {
+    suspend fun continueProcess(processId: ObjectId, choice: String) : Response {
 
         val process = processRepository.getProcessById(processId)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Can't find process with id ${processId.toHexString()}")
 
-        val questions = questionRepository.getAllQuestionsByProcessId(processId)!!
+        val questions = questionRepository.getAllQuestionsByProcessId(process.id)
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Can't find questions with processId ${process.id.toHexString()}")
+
         val requestIndex = questions.size*2-1
+
 
         val request = Request(
             ObjectId(),
@@ -100,14 +108,19 @@ class ProcessService {
             if (!it) throw ResponseStatusException(HttpStatus.CONFLICT, "Can't create request. This is a error caused by internal MongoDB Database.")
         }
 
+
+        val requests = requestRepository.getAllRequestsByProcessId(process.id)
+            ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Can't find requests with processId ${process.id.toHexString()}")
+
         if (requestIndex > 8) {
 
+            val ideaChatGPTDTO = chatGPTService.getIdea(questions, requests)
             val idea = Idea(
                 ObjectId(),
                 process.id,
                 process.userId,
-                "MockUp Idea",
-                "MockUp Project description",
+                ideaChatGPTDTO.title,
+                ideaChatGPTDTO.description,
                 Date.from(Instant.now())
             )
 
@@ -119,7 +132,7 @@ class ProcessService {
 
         } else {
 
-            val questionChatGPTDTO = chatGPTService.getQuestion()
+            val questionChatGPTDTO = chatGPTService.getQuestion(questions, requests)
             val question = Question(
                 ObjectId(),
                 process.id,

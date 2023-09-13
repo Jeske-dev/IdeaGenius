@@ -5,22 +5,15 @@ import de.jeske.restapiwithopenai.dtos.ProcessDTO
 import de.jeske.restapiwithopenai.dtos.QuestionDTO
 import de.jeske.restapiwithopenai.dtos.ResponseDTO
 import de.jeske.restapiwithopenai.modells.Idea
-import de.jeske.restapiwithopenai.modells.Process
 import de.jeske.restapiwithopenai.modells.Question
-import de.jeske.restapiwithopenai.modells.Request
 import de.jeske.restapiwithopenai.services.ProcessService
 import org.bson.types.ObjectId
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.server.ResponseStatusException
-import java.time.Instant
-import java.util.Date
-import java.util.Random
 
 @RestController
 @RequestMapping("/process")
@@ -36,7 +29,7 @@ class ProcessController {
 
         val processId = ObjectId(id)
 
-        val process = processService.handleGetProcessById(processId)
+        val process = processService.getProcessById(processId)
 
         return ProcessDTO(process)
 
@@ -50,7 +43,7 @@ class ProcessController {
 
         val userId = ObjectId(id)
 
-        val question = processService.handleStartProcess(userId, lang)
+        val question = processService.startProcess(userId, lang)
 
         return QuestionDTO(question)
 
@@ -64,7 +57,7 @@ class ProcessController {
 
         val processId = ObjectId(id)
 
-        val response = processService.handleResponse(processId, choice)
+        val response = processService.continueProcess(processId, choice)
 
         return when (response) {
             is Idea -> IdeaDTO(response)

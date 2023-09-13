@@ -1,12 +1,13 @@
 package de.jeske.restapiwithopenai.services
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import de.jeske.restapiwithopenai.Chats
+import de.jeske.restapiwithopenai.repositories.mockups.ChatsRepository
 import de.jeske.restapiwithopenai.controller.ChatGPTController
 import de.jeske.restapiwithopenai.dtos.IdeaChatGPTDTO
 import de.jeske.restapiwithopenai.dtos.QuestionChatGPTDTO
 import de.jeske.restapiwithopenai.modells.Question
-import de.jeske.restapiwithopenai.modells.Response
+import de.jeske.restapiwithopenai.modells.Request
+import de.jeske.restapiwithopenai.modells.TopicChoicePair
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
@@ -18,29 +19,36 @@ class ChatGPTService {
     @Autowired
     private lateinit var chatGPTController: ChatGPTController
 
-    suspend fun getQuestion(questions: List<Question>, responses: List<Response>): QuestionChatGPTDTO {
+    suspend fun getQuestion(questions: List<Question>, requests: List<Request>): QuestionChatGPTDTO {
 
         val questionRaw = chatGPTController.completion(
-            Chats.generateGetQuestionChat()
+            ChatsRepository.getQuestionChat(pair(questions, requests))
         ) ?: throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "ChatGPT is not responding!")
 
         return parseStringToQuestionChatGPTDTO(questionRaw)
     }
 
-    /*suspend fun getIdea(processId: ObjectId, userId: ObjectId): Idea {
+    suspend fun getIdea(questions: List<Question>, requests: List<Request>): IdeaChatGPTDTO {
 
-        val ideaRaw = chatGPTController.completion(listOf())
-            ?: throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "ChatGPT is not responding!")
+        val ideaRaw = chatGPTController.completion(
+            ChatsRepository.getIdeaChat(pair(questions, requests))
+        ) ?: throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "ChatGPT is not responding!")
 
-        return parseIdea(
-            ideaRaw,
-            processId,
-            userId
-        )
+        return parseStringToIdeaChatGPTDTO(ideaRaw)
 
     }
 
-     */
+    fun pair(questions: List<Question>, requests: List<Request>) : List<TopicChoicePair> {
+        val topicchoicepairs = mutableListOf<TopicChoicePair>()
+        questions.forEachIndexed { index, question ->
+            val request = requests.getOrNull(index)
+            if (request != null) {
+                val pair = TopicChoicePair(question.questionTopic, request.choice)
+                topicchoicepairs.add(pair)
+            }
+        }
+        return topicchoicepairs
+    }
 
     fun parseStringToQuestionChatGPTDTO(raw: String): QuestionChatGPTDTO {
         val objectMapper = ObjectMapper()

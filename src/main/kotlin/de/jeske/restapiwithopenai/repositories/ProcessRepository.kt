@@ -4,6 +4,7 @@ import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
 import de.jeske.restapiwithopenai.entities.ProcessEntity
 import de.jeske.restapiwithopenai.modells.Process
+import de.jeske.restapiwithopenai.repositories.clients.MongoDBClient
 import org.bson.types.ObjectId
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Repository

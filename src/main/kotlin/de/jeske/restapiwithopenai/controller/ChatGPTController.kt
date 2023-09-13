@@ -3,11 +3,11 @@ package de.jeske.restapiwithopenai.controller
 import com.aallam.openai.api.chat.ChatCompletion
 import com.aallam.openai.api.chat.ChatCompletionRequest
 import com.aallam.openai.api.chat.ChatMessage
-import com.aallam.openai.api.chat.ChatRole
 import com.aallam.openai.api.http.Timeout
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.stereotype.Component
 import kotlin.time.Duration.Companion.seconds
 
@@ -25,7 +25,7 @@ class ChatGPTController {
 
         val openAI = OpenAI(
             token = apiKey,
-            timeout = timeout
+            timeout = timeout,
         )
 
         val chatCompletionRequest = ChatCompletionRequest(

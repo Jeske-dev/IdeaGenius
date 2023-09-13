@@ -44,6 +44,15 @@ dependencies {
     // OpenAI
     // https://github.com/Aallam/openai-kotlin
     implementation("com.aallam.openai:openai-client:3.4.0")
+    implementation("io.ktor:ktor-client-okhttp:2.3.4")
+
+    //runtimeOnly("io.ktor:ktor-client-java")
+    //implementation("io.ktor:ktor-client-curl:3.4.0")
+
+
+    //implementation("com.aallam.openai:openai-client-bom:3.4.0")
+    //implementation("com.aallam.openai:openai-client")
+    //runtimeOnly("io.ktor:ktor-client-okhttp")
 }
 
 tasks.withType<KotlinCompile> {
