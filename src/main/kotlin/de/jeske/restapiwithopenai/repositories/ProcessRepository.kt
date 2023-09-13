@@ -61,6 +61,7 @@ class ProcessRepository @Autowired constructor(private val mongoDBClient: MongoD
         val updates = Updates.combine(
             Updates.set(ProcessEntity::userId.name, process.userId),
             Updates.set(ProcessEntity::lang.name, process.lang),
+            Updates.set(ProcessEntity::length.name, process.length),
             Updates.set(ProcessEntity::date.name, process.date)
         )
 

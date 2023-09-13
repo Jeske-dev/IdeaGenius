@@ -9,5 +9,6 @@ data class Process(
     val id: ObjectId = ObjectId(),
     val userId: ObjectId,
     val lang: String,
+    var length: Int,
     val date: Date
 )

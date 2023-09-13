@@ -28,7 +28,7 @@ object MongoDBClient {
         CodecRegistries.fromCodecs(
 
             GenericCodec(UserEntity::class.java, listOf("_id", "email", "surname", "firstname", "processIds")),
-            GenericCodec(ProcessEntity::class.java, listOf("_id", "userId", "lang", "date")),
+            GenericCodec(ProcessEntity::class.java, listOf("_id", "userId", "lang", "length", "date")),
             GenericCodec(RequestEntity::class.java, listOf("_id", "processId", "choice", "index", "date")),
             GenericCodec(QuestionEntity::class.java, listOf("_id", "processId", "question", "questionTopic", "answerChoices", "index", "date")),
             GenericCodec(IdeaEntity::class.java, listOf("_id", "processId", "userId", "title", "description", "date"))

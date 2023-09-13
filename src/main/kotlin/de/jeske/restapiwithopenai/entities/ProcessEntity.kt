@@ -12,8 +12,9 @@ data class ProcessEntity(
     val _id: ObjectId = ObjectId(),
     val userId: ObjectId,
     val lang: String,
+    val length: Int,
     val date: Date
 ) {
-    constructor(process: Process) : this(process.id, process.userId, process.lang, process.date)
-    fun toProcess() : Process = Process(_id, userId, lang, date)
+    constructor(process: Process) : this(process.id, process.userId, process.lang, process.length, process.date)
+    fun toProcess() : Process = Process(_id, userId, lang, length, date)
 }
