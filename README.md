@@ -2,12 +2,12 @@
 Something like a pathfinder for your next coding project. Choose which project types you prefer. | API that works with OpenAI's ChatGPT  | Staffbase Internship
 
 ## Before running the project
-Make sure to insert you OpenAI API Key in [application.properties](src/main/resources/application.properties)
+Make sure to insert you OpenAI API Key and MongoDB Atlas uri in [application.properties](src/main/resources/application.properties)
 ```
 openAi.apiKey= <your OpenAI key>
+mongo.url= <your MongoDB Atlas url>
 ```
 You can get your own for free key at [OpenAI](https://platform.openai.com/)
-
 
 ## Endpoints
 Use this [link](https://api.postman.com/collections/19754314-fab6546d-a6bf-4ce8-90c6-e00eeb6725e5?access_key=PMAT-01H9JTV2VENY7C6QNPKV4V5W91) to download my postman workspace.
