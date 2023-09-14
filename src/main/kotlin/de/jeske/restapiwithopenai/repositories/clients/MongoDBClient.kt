@@ -12,16 +12,18 @@ import de.jeske.restapiwithopenai.entities.*
 import org.bson.BsonInt64
 import org.bson.Document
 import org.bson.codecs.configuration.CodecRegistries
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 
 @Component
-object MongoDBClient {
+class MongoDBClient {
 
     //@Autowired
     //private lateinit var args : ApplicationArguments
 
     // just for test
-    private const val _uri = "mongodb+srv://dev:082m5Zip4JWiVV4U@cluster0.3hlx91e.mongodb.net/?retryWrites=true&w=majority"
+    @Value("\${mongo.url}")
+    private lateinit var _uri: String
 
     private val codecRegistry = CodecRegistries.fromRegistries(
         MongoClientSettings.getDefaultCodecRegistry(),
@@ -40,9 +42,7 @@ object MongoDBClient {
 
     fun getClient() : MongoClient? {
 
-        // for testing
         val uri = _uri
-        //val uri = args.getOptionValues("uri").first() as String
 
         val settings = MongoClientSettings.builder()
             .codecRegistry(codecRegistry)
