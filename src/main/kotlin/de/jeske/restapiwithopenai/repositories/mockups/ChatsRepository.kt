@@ -2,11 +2,11 @@ package de.jeske.restapiwithopenai.repositories.mockups
 
 import com.aallam.openai.api.chat.ChatMessage
 import com.aallam.openai.api.chat.ChatRole
-import de.jeske.restapiwithopenai.modells.TopicChoicePair
+import de.jeske.restapiwithopenai.modells.QuestionChoicePair
 
 object ChatsRepository {
 
-    fun getQuestionChat(pairs: List<TopicChoicePair>): List<ChatMessage> = listOf(
+    fun getQuestionChat(pairs: List<QuestionChoicePair>, lang: String): List<ChatMessage> = listOf(
         ChatMessage(
             role = ChatRole.System,
             content = """
@@ -20,33 +20,78 @@ object ChatsRepository {
             """.trimIndent()
         ),
         ChatMessage(
+            role = ChatRole.User,
+            content = """
+                Please Ignore all previous messages!
+                [
+                    "Which kind of project do you like to start?": "Coding Project",
+                    "What specific area of coding are you interested in for your project?": "Web Development",
+                    "How much experience do you already have in this field": "none",
+                    "How long should the project take?": "2 weeks",
+                    "What specific features or functionality would you like to develop for your website?": "Online booking system"
+                ]
+                Based on this user choices, go on with the next question. ONLY write the json object.
+                
+                Please answer in following language: en
+            """.trimIndent()
+        ),
+        ChatMessage(
             role = ChatRole.Assistant,
             content = """
                 {
-                    "question": "What kind of project do you want to tackle next?",
+                    "question": "What kind of booking system do you want to develop?",
                     "answer_choices": [
-                        "Coding Project",
-                        "Wood processing Project",
-                        "Social Project",
-                        "Musical Project"
+                        "car rental",
+                        "vacation booking",
+                        "experience booking"
                     ],
-                    "question_topic": "Project kind"
+                    "question_topic": "kind of booking system"
                 }
             """.trimIndent()
         ),
         ChatMessage(
             role = ChatRole.User,
             content = """
+                Please ignore all previous messages!
+                [
+                    "Which kind of project do you like to start?": "Coding Project",
+                ]
+                Based on this user choices, go on with the next question. ONLY write the json object.
+                
+                Please answer in following language: $lang
+            """.trimIndent()
+        ),
+        ChatMessage(
+            role = ChatRole.Assistant,
+            content = """
+                {
+                    "question": "Which of the topics are you interested in and could you imagine doing a project on?",
+                    "answer_choices": [
+                        "stones",
+                        "time management",
+                        "vacation",
+                        "social impact",
+                    ],
+                    "question_topic": "kind of booking system"
+                }
+            """.trimIndent()
+        ),
+        ChatMessage(
+            role = ChatRole.User,
+            content = """
+                Please ignore all previous messages!
                 [
                     "Project kind": "Coding Project",
                     ${pairsToString(pairs)}
                 ]
                 Based on this user choices, go on with the next question. ONLY write the json object.
+                
+                Please answer in following language: $lang
             """.trimIndent()
         )
     )
 
-    fun getIdeaChat(pairs: List<TopicChoicePair>): List<ChatMessage> = listOf(
+    fun getIdeaChat(pairs: List<QuestionChoicePair>, lang: String): List<ChatMessage> = listOf(
         ChatMessage(
             role = ChatRole.System,
             content = """
@@ -63,17 +108,23 @@ object ChatsRepository {
             content = """
                 Ignore content of previous messages!
                 [
-                    "Project kind": "Coding Project",
+                    "Which kind of project do you like to start?": "Coding Project",
+                    "What specific area of coding are you interested in for your project?": "Web Development",
+                    "How much experience do you already have in this field": "none",
+                    "How long should the project take?": "2 weeks",
+                    "What specific features or functionality would you like to develop for your website?": "Online booking system"
                 ]
                 Based on this user choices create a idea. ONLY write the json object.
+                
+                Please answer in following language: de
             """.trimIndent()
         ),
         ChatMessage(
             role = ChatRole.Assistant,
             content = """
                 {
-                  "title": "CodeHub: Collaborative Coding Platform",
-                  "description": "Create a web-based collaborative coding platform using modern technologies like React, Node.js, and WebSocket. This platform will allow multiple users to collaborate on coding projects in real-time, providing features such as code editing, real-time updates, chat, and version control. It will be a versatile tool for remote teams, coding bootcamps, and open-source contributors."
+                  "title": "Buchungsplattform für Online-Terminbuchungen",
+                  "description": "Entwickle eine Webanwendung für Online-Terminbuchungen, die es Unternehmen ermöglicht, ihre Dienstleistungen online anzubieten. Verwende moderne Webtechnologien wie React, Node.js und MongoDB. Achte auf eine benutzerfreundliche Oberfläche! Sei creativ und tobe dich aus!"
                 }
             """.trimIndent()
         ),
@@ -85,11 +136,13 @@ object ChatsRepository {
                     ${pairsToString(pairs)}
                 ]
                 Based on this user choices create a idea. ONLY write the json object.
+                
+                Please answer in following language: $lang
             """.trimIndent()
         )
     )
 
-    private fun pairsToString(pairs: List<TopicChoicePair>) : String {
+    private fun pairsToString(pairs: List<QuestionChoicePair>) : String {
         var s = ""
         pairs.forEach {
             s += it.toString()

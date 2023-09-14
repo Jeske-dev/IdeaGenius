@@ -4,7 +4,7 @@ import de.jeske.restapiwithopenai.dtos.IdeaChatGPTDTO
 import de.jeske.restapiwithopenai.dtos.QuestionChatGPTDTO
 import de.jeske.restapiwithopenai.modells.Question
 import de.jeske.restapiwithopenai.modells.Request
-import de.jeske.restapiwithopenai.modells.TopicChoicePair
+import de.jeske.restapiwithopenai.modells.QuestionChoicePair
 import org.bson.types.ObjectId
 import org.junit.jupiter.api.Test
 
@@ -56,8 +56,8 @@ class ChatGPTServiceTest {
         )
 
         val expected = listOf(
-            TopicChoicePair("mood", "Good"),
-            TopicChoicePair("internship reason", "learning new things"),
+            QuestionChoicePair("mood", "Good"),
+            QuestionChoicePair("internship reason", "learning new things"),
         )
 
         assertEquals(expected.toString(), chatGPTService.pair(questions, requests).toString())

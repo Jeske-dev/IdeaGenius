@@ -84,6 +84,10 @@ class ProcessService {
         )
         process.length++
 
+        requestRepository.createRequest(request).also {
+            if (!it) throw ResponseStatusException(HttpStatus.CONFLICT, "Can't create request. This is a error caused by internal MongoDB Database.")
+        }
+
         val response: Response
         if (process.length > 7) {
 
@@ -109,9 +113,6 @@ class ProcessService {
         process.length += 1
 
         // (data has to be saved after the request to OpenAI API -> if server based error at OpenAI occurs, current data won't be saved -> user can repeat his step)
-        requestRepository.createRequest(request).also {
-            if (!it) throw ResponseStatusException(HttpStatus.CONFLICT, "Can't create request. This is a error caused by internal MongoDB Database.")
-        }
         processRepository.updateProcess(process).also {
             if (!it) throw ResponseStatusException(HttpStatus.CONFLICT, "Can't update process. This is a error caused by internal MongoDB Database.")
         }
@@ -126,7 +127,7 @@ class ProcessService {
         val requests = requestRepository.getAllRequestsByProcessId(process.id)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Can't find requests with processId ${process.id.toHexString()}")
 
-        val questionChatGPTDTO = chatGPTService.getQuestion(questions, requests)
+        val questionChatGPTDTO = chatGPTService.getQuestion(questions, requests, process.lang)
         return Question(
             ObjectId(),
             process.id,
@@ -144,7 +145,7 @@ class ProcessService {
         val requests = requestRepository.getAllRequestsByProcessId(process.id)
             ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Can't find requests with processId ${process.id.toHexString()}")
 
-        val ideaChatGPTDTO = chatGPTService.getIdea(questions, requests)
+        val ideaChatGPTDTO = chatGPTService.getIdea(questions, requests, process.lang)
         return Idea(
             ObjectId(),
             process.id,

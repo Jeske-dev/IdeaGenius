@@ -19,7 +19,7 @@ class ChatGPTController {
 
     private val timeout = Timeout(socket = 60.seconds)
     private val modelId = "gpt-3.5-turbo"
-    private val maxTokens = 100
+    private val maxTokens = 200
 
     suspend fun completion(messages: List<ChatMessage>): String? {
 

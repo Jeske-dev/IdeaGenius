@@ -7,7 +7,7 @@ import de.jeske.restapiwithopenai.dtos.IdeaChatGPTDTO
 import de.jeske.restapiwithopenai.dtos.QuestionChatGPTDTO
 import de.jeske.restapiwithopenai.modells.Question
 import de.jeske.restapiwithopenai.modells.Request
-import de.jeske.restapiwithopenai.modells.TopicChoicePair
+import de.jeske.restapiwithopenai.modells.QuestionChoicePair
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
@@ -19,35 +19,41 @@ class ChatGPTService {
     @Autowired
     private lateinit var chatGPTController: ChatGPTController
 
-    suspend fun getQuestion(questions: List<Question>, requests: List<Request>): QuestionChatGPTDTO {
+    suspend fun getQuestion(questions: List<Question>, requests: List<Request>, lang: String): QuestionChatGPTDTO {
 
         val questionRaw = chatGPTController.completion(
-            ChatsRepository.getQuestionChat(pair(questions, requests))
+            ChatsRepository.getQuestionChat(
+                pair(questions, requests),
+                lang
+            )
         ) ?: throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "ChatGPT is not responding!")
 
         return parseStringToQuestionChatGPTDTO(questionRaw)
     }
 
-    suspend fun getIdea(questions: List<Question>, requests: List<Request>): IdeaChatGPTDTO {
+    suspend fun getIdea(questions: List<Question>, requests: List<Request>, lang: String): IdeaChatGPTDTO {
 
         val ideaRaw = chatGPTController.completion(
-            ChatsRepository.getIdeaChat(pair(questions, requests))
+            ChatsRepository.getIdeaChat(
+                pair(questions, requests),
+                lang
+            )
         ) ?: throw ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "ChatGPT is not responding!")
 
         return parseStringToIdeaChatGPTDTO(ideaRaw)
 
     }
 
-    fun pair(questions: List<Question>, requests: List<Request>) : List<TopicChoicePair> {
-        val topicchoicepairs = mutableListOf<TopicChoicePair>()
+    fun pair(questions: List<Question>, requests: List<Request>) : List<QuestionChoicePair> {
+        val questionchoicePairs = mutableListOf<QuestionChoicePair>()
         questions.forEachIndexed { index, question ->
             val request = requests.getOrNull(index)
             if (request != null) {
-                val pair = TopicChoicePair(question.questionTopic, request.choice)
-                topicchoicepairs.add(pair)
+                val pair = QuestionChoicePair(question.question, request.choice)
+                questionchoicePairs.add(pair)
             }
         }
-        return topicchoicepairs
+        return questionchoicePairs
     }
 
     fun parseStringToQuestionChatGPTDTO(raw: String): QuestionChatGPTDTO {
