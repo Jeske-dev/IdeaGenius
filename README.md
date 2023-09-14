@@ -47,7 +47,6 @@ starts a new process
 (all parameters are required, language ISO foramt or writen out)
 -> returns first question (this object will include processId)
 
-### Process
 ```
 POST http://localhost:8080/process/response?id=<processId>&choice=<your choice>
 ```
