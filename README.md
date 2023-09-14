@@ -2,11 +2,11 @@
 Something like a pathfinder for your next coding project. Choose which project types you prefer. | API that works with OpenAI's ChatGPT  | Staffbase Internship
 
 ## Before running the project
-Make sure to insert you OpenAI API Key in [a relative link](src/main/resources/application.properties)
+Make sure to insert you OpenAI API Key in [application.properties](src/main/resources/application.properties)
 ```
 openAi.apiKey= <your OpenAI key>
 ```
-You can get your own for free key at [link](https://platform.openai.com/)
+You can get your own for free key at [OpenAI](https://platform.openai.com/)
 
 
 ## Endpoints
@@ -55,6 +55,6 @@ response to previous question
 -> returns next question or final idea
 
 Have a look at
-- [a relative link](src/main/kotlin/de/jeske/restapiwithopenai/dtos)
-- [a relative link](src/main/kotlin/de/jeske/restapiwithopenai/controller)
+- [/dtos](src/main/kotlin/de/jeske/restapiwithopenai/dtos)
+- [/controller](src/main/kotlin/de/jeske/restapiwithopenai/controller)
 to see DTO's and Controller more in detail.
